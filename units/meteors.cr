@@ -45,7 +45,7 @@ class Meteor < Unit
   private def spawn_children(meteor_type : Type)
     # todo: rework those Math functions to use vector2 instead of tuple
     polar = Math.cartesian_to_polar(@velocity.x, @velocity.y)
-    angle = Random.rand(Math::PI / 6..Math::PI / 3)
+    angle = Random.rand( Math::PI/6 .. Math::PI/3 )
     velocity_a = Math.polar_to_cartesian(polar[:radius], polar[:angle] + angle)
     velocity_b = Math.polar_to_cartesian(polar[:radius], polar[:angle] - angle)
 

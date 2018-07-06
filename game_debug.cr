@@ -108,17 +108,17 @@ class Game
         @@window.close
       when SF::Event::KeyPressed
         case event.code
-        when SF::Keyboard::Num1
+        when SF::Keyboard::F1
           @running_mode = RunningMode::Continuous
           @clock.restart
           @dt -= @dt
-        when SF::Keyboard::Num2
+        when SF::Keyboard::F2
           if @running_mode != RunningMode::Step
             @running_mode = RunningMode::Step
           else
             @step = true
           end
-        when SF::Keyboard::W
+        when SF::Keyboard::F3
           @target = @@world
           update_debug_information
         end
@@ -171,9 +171,9 @@ class Game
   private def build_gui
     gui = {} of String => Button
 
-    button = Button.new({90, 60})
+    button = Button.new({150, 60})
     button.position = {@@window.size.x / 2 + 10, 10}
-    button.add_label("Continuous")
+    button.add_label("Continuous (F1)")
     button.on_click do
       @running_mode = RunningMode::Continuous
       @clock.restart
@@ -181,9 +181,9 @@ class Game
     end
     gui["Continuous"] = button
 
-    button = Button.new({90, 60})
-    button.position = {@@window.size.x / 2 + 105, 10}
-    button.add_label("Step")
+    button = Button.new({150, 60})
+    button.position = {@@window.size.x / 2 + 10, 75}
+    button.add_label("Step (F2)")
     button.on_click do
       if @running_mode != RunningMode::Step
         @running_mode = RunningMode::Step
@@ -193,17 +193,17 @@ class Game
     end
     gui["Step"] = button
 
-    button = Button.new({90, 60})
-    button.position = {@@window.size.x / 2 + 200, 10}
-    button.add_label("World")
+    button = Button.new({150, 60})
+    button.position = {@@window.size.x / 2 + 10, 140}
+    button.add_label("World (F3)")
     button.on_click do
       @target = @@world
       update_debug_information
     end
     gui["World"] = button
 
-    button = Button.new({90, 60}, RedButtonStyle.new)
-    button.position = {@@window.size.x / 2 + 485, 10}
+    button = Button.new({120, 60}, RedButtonStyle.new)
+    button.position = {@@window.size.x / 2 + 170, 10}
     button.add_label("Fighter")
     button.on_click do
       enemy = EnemyFighter.new
@@ -212,8 +212,8 @@ class Game
     end
     gui["EnemyFighter"] = button
 
-    button = Button.new({90, 60}, RedButtonStyle.new)
-    button.position = {@@window.size.x / 2 + 485, 70}
+    button = Button.new({120, 60}, RedButtonStyle.new)
+    button.position = {@@window.size.x / 2 + 170, 75}
     button.add_label("Carrier")
     button.on_click do
       enemy = EnemyCarrier.new
@@ -222,8 +222,8 @@ class Game
     end
     gui["EnemyCarrier"] = button
 
-    button = Button.new({90, 60}, RedButtonStyle.new)
-    button.position = {@@window.size.x / 2 + 485, 130}
+    button = Button.new({120, 60}, RedButtonStyle.new)
+    button.position = {@@window.size.x / 2 + 170, 140}
     button.add_label("Interceptor")
     button.on_click do
       enemy = EnemyInterceptor.new
@@ -232,8 +232,8 @@ class Game
     end
     gui["EnemyInterceptor"] = button
 
-    button = Button.new({90, 60}, GreenButtonStyle.new)
-    button.position = {@@window.size.x / 2 + 580, 10}
+    button = Button.new({120, 60}, GreenButtonStyle.new)
+    button.position = {@@window.size.x / 2 + 300, 10}
     button.add_label("Health")
     button.on_click do
       pickup = PickupHealth.new
@@ -242,8 +242,8 @@ class Game
     end
     gui["PickupHealth"] = button
 
-    button = Button.new({90, 60}, GreenButtonStyle.new)
-    button.position = {@@window.size.x / 2 + 580, 70}
+    button = Button.new({120, 60}, GreenButtonStyle.new)
+    button.position = {@@window.size.x / 2 + 300, 75}
     button.add_label("Knock")
     button.on_click do
       pickup = PickupKnock.new
@@ -251,6 +251,46 @@ class Game
       @@world.add(pickup)
     end
     gui["PickupKnock"] = button
+
+    button = Button.new({120, 60}, BlueButtonStyle.new)
+    button.position = {@@window.size.x / 2 + 430, 10}
+    button.add_label("Big Meteor")
+    button.on_click do
+      meteor = Meteor.new(Meteor::Type::Big)
+      meteor.position = {Random.rand(0..Config.window_size.x - 1), -Config.window_size.y * 0.25}
+      @@world.add(meteor)
+    end
+    gui["BigMeteor"] = button
+
+    button = Button.new({120, 60}, BlueButtonStyle.new)
+    button.position = {@@window.size.x / 2 + 430, 75}
+    button.add_label("Med Meteor")
+    button.on_click do
+      meteor = Meteor.new(Meteor::Type::Medium)
+      meteor.position = {Random.rand(0..Config.window_size.x - 1), -Config.window_size.y * 0.25}
+      @@world.add(meteor)
+    end
+    gui["MedMeteor"] = button
+
+    button = Button.new({120, 60}, BlueButtonStyle.new)
+    button.position = {@@window.size.x / 2 + 430, 140}
+    button.add_label("Small Meteor")
+    button.on_click do
+      meteor = Meteor.new(Meteor::Type::Small)
+      meteor.position = {Random.rand(0..Config.window_size.x - 1), -Config.window_size.y * 0.25}
+      @@world.add(meteor)
+    end
+    gui["SmallMeteor"] = button
+
+    button = Button.new({120, 60}, BlueButtonStyle.new)
+    button.position = {@@window.size.x / 2 + 430, 205}
+    button.add_label("Tiny Meteor")
+    button.on_click do
+      meteor = Meteor.new(Meteor::Type::Tiny)
+      meteor.position = {Random.rand(0..Config.window_size.x - 1), -Config.window_size.y * 0.25}
+      @@world.add(meteor)
+    end
+    gui["TinyMeteor"] = button
 
     gui
   end

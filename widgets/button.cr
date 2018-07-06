@@ -27,9 +27,9 @@ end
 
 class RedButtonStyle < ButtonStyle
   def initialize
-    @normal_color = SF.color(224, 63, 63, 255)
-    @pressed_color = SF.color(219, 105, 105, 255)
-    @hover_color = SF.color(222, 164, 164, 255)
+    @normal_color = SF.color(180, 63, 63, 255)
+    @pressed_color = SF.color(180, 105, 105, 255)
+    @hover_color = SF.color(180, 164, 164, 255)
 
     @label_normal_color = SF.color(230, 216, 216, 255)
     @label_pressed_color = SF.color(161, 153, 153, 255)
@@ -42,9 +42,9 @@ end
 
 class GreenButtonStyle < ButtonStyle
   def initialize
-    @normal_color = SF.color(63, 224, 63, 255)
-    @pressed_color = SF.color(105, 219, 105, 255)
-    @hover_color = SF.color(164, 222, 164, 255)
+    @normal_color = SF.color(63, 152, 63, 255)
+    @pressed_color = SF.color(105, 163, 105, 255)
+    @hover_color = SF.color(164, 174, 164, 255)
 
     @label_normal_color = SF.color(216, 230, 216, 255)
     @label_pressed_color = SF.color(153, 163, 153, 255)

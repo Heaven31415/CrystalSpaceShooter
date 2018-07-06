@@ -14,10 +14,10 @@ class Config
   # window settings
   @@window_size = SF.vector2i(800, 900)
   @@window_rect = SF.int_rect(0, 0, @@window_size.x, @@window_size.y)
-{% if flag?(:debug) %}
-  @@window_name = "Crystal Space Shooter! (Debug)"
-{% else %}
+{% if flag?(:release) %}
   @@window_name = "Crystal Space Shooter! (Release)"
+{% else %}
+  @@window_name = "Crystal Space Shooter! (Debug)"
 {% end %}
   # background settings
   @@background_velocity = SF.vector2f(0.0, 75.0)

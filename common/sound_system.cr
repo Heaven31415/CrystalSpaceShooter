@@ -1,3 +1,6 @@
+require "crsfml/audio"
+require "./resource_holder.cr"
+
 class SoundSystem
 	def initialize(@sound_buffers : ResourceHolder(SF::SoundBuffer))
 		@sounds = [] of SF::Sound

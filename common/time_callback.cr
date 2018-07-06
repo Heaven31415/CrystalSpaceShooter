@@ -1,3 +1,5 @@
+require "crsfml/system"
+
 class TimeCallback
   enum Mode
     Disabled

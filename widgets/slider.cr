@@ -1,3 +1,5 @@
+require "crsfml/graphics"
+
 class Slider < SF::RectangleShape
   # base settings
   @@base_fill_color = SF.color(200, 200, 200, 255)

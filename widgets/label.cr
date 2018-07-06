@@ -1,3 +1,5 @@
+require "crsfml/graphics"
+
 class Label < SF::Text
   @@font : SF::Font = Game.fonts.get("calibri.ttf")
   @@minimal_size = 10

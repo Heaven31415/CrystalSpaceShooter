@@ -1,10 +1,9 @@
+require "./common/resource_holder.cr"
+require "./common/sound_system.cr"
+require "./config.cr"
+require "./world.cr"
 require "crsfml"
 require "crsfml/audio"
-
-require "./config.cr"
-require "./resource_holder.cr"
-require "./sound_system.cr"
-require "./world.cr"
 
 class Game
   @@TIME_PER_FRAME = SF.seconds(1.0 / Config.fps)
@@ -15,7 +14,7 @@ class Game
   @@world = World.new
   @@window = SF::RenderWindow.new(SF::VideoMode.new(Config.window_size.x, Config.window_size.y), Config.window_name)
 
-  define_class_methods(fonts, sounds, textures, audio, window, world)
+  class_getter(fonts, sounds, textures, audio, window, world)
 
   def initialize
     desktop_mode = SF::VideoMode.desktop_mode

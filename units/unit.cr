@@ -1,3 +1,5 @@
+require "crsfml/graphics"
+
 struct UnitDefinition
   property type : Unit::Type
   property acceleration : SF::Vector2f

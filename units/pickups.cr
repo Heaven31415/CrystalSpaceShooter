@@ -1,3 +1,5 @@
+require "./unit.cr"
+
 class Pickup < Unit
   def initialize(max_velocity : SF::Vector2f, texture_name : String)
     definition = UnitDefinition.new

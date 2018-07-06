@@ -1,13 +1,12 @@
-require "crsfml"
-require "crsfml/audio"
-
 require "./common/resource_holder.cr"
 require "./common/sound_system.cr"
+require "./config.cr"
+require "./ui/hud.cr"
 require "./widgets/button.cr"
 require "./widgets/slider.cr"
-require "./ui/hud.cr"
-require "./config.cr"
 require "./world.cr"
+require "crsfml"
+require "crsfml/audio"
 
 class Cursor
   include SF::Drawable

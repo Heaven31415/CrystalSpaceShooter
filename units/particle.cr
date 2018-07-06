@@ -1,3 +1,5 @@
+require "crsfml/graphics"
+
 struct Particle
   def initialize(@position, @velocity, @lifetime)
     @orbit = false

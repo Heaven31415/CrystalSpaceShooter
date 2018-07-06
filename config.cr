@@ -22,7 +22,7 @@ class Config
   # background settings
   @@background_velocity = SF.vector2f(0.0, 75.0)
 
-  define_class_methods(
+  class_getter(
     fps,
     fonts_path,
     sounds_path,
@@ -42,7 +42,7 @@ class Config
   @@debug_window_rect = SF.int_rect(0, 0, @@debug_window_size.x, @@debug_window_size.y)
   @@debug_window_name = "Debug Window"
 
-  define_class_methods(
+  class_getter(
     debug_window_size,
     debug_window_rect,
     debug_window_name

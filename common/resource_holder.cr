@@ -9,7 +9,7 @@ class ResourceHolder(T)
       raise "Unable to find directory at location: #{Dir.current + '/' + path_to_dir}"
     else
       Dir.cd(path_to_dir) do
-        Dir.foreach(Dir.current) do |filename|
+        Dir.each(Dir.current) do |filename|
           if File.directory?(Dir.current + '/' + filename)
             if !(filename == "." || filename == "..")
               find_resources(filename, extensions)

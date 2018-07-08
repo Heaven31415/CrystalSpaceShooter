@@ -6,10 +6,12 @@ class Config
   # resources paths
   @@fonts_path = "resources/fonts"
   @@sounds_path = "resources/sounds"
+  @@styles_path = "resources/styles"
   @@textures_path = "resources/textures"
   # resources extensions
   @@fonts_ext = ["ttf"]
   @@sounds_ext = ["wav"]
+  @@styles_ext = ["style"]
   @@textures_ext = ["png"]
   # window settings
   @@window_size = SF.vector2i(800, 900)

@@ -1,4 +1,4 @@
-require "./common/utilities.cr"
+require "./utilities.cr"
 
 class Config
   # frames per seconds

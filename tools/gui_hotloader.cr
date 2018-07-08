@@ -1,5 +1,12 @@
-require "crsfml/graphics"
+# GUI Hotloader Test
+# 
+# This file implements reader and writer for special .style files, which
+# describe visual properties of widgets like buttons and sliders. It also
+# implements a very simple hotloading system, allowing the program to notice
+# when you change something in your .style file and load those changes immediately.
+#
 
+require "crsfml/graphics"
 require "openssl/sha1.cr"
 
 class Button
@@ -16,22 +23,36 @@ class Button
     Size
   end
 
-  def initialize(style : ButtonStyle)
+  def initialize(style : Style(Properties))
   end
 end
 
-alias Property = Float32 | SF::Color | SF::Vector2f | String
+class Slider
+  enum Properties
+    BaseFillColor
+    BaseOutlineColor
+    BaseOutlineThickness
+    FillFillColor
+    FillOutlineColor
+    FillOutlineThickness
+    BarFillColor
+    BarWidth
+    Size
+  end
+end
 
-class ButtonStyle
+alias PropertyValue = Float32 | SF::Color | SF::Vector2f | String
+
+class Style(T)
   def initialize
-    @properties = {} of Button::Properties => Property
+    @properties = {} of T => PropertyValue
   end
 
-  def []=(key : Button::Properties, value : Property)
+  def []=(key : T, value : PropertyValue)
     @properties[key] = value
   end
 
-  def [](key : Button::Properties) : Property
+  def [](key : T) : PropertyValue
     @properties[key]
   end
 
@@ -41,7 +62,7 @@ class ButtonStyle
     end
   end
 
-  def self.from_file(filename : String) : ButtonStyle
+  def self.from_file(filename : String) : self
     unless File.file? filename
       raise "Unable to find file at: `#{filename}`"
     end
@@ -72,11 +93,11 @@ class ButtonStyle
     end
 
     header = numbered_lines[0][1]
-    unless header.match(/###\s?+Button/)
+    unless header.match(/###\s?+#{T}/)
       raise "Unable to find correct header in file: `#{filename}`"
     end
 
-    style = ButtonStyle.new
+    style = self.new
 
     numbered_lines.shift # remove header line
     numbered_lines.each do |numbered_line|
@@ -85,7 +106,7 @@ class ButtonStyle
         raise "Invalid line format in file `#{filename}` at line #{numbered_line[0]}"
       end
 
-      property_name = Button::Properties.parse? matches[1]
+      property_name = T.parse? matches[1]
       unless property_name
         raise "Invalid property name in file `#{filename}` at line #{numbered_line[0]}"
       end
@@ -135,6 +156,41 @@ class ButtonStyle
 
     style
   end
+
+  def to_file(filename : String, force_overwrite : Bool = false)
+    if File.exists? filename
+      if !force_overwrite
+        if File.writable? filename
+          raise "Unable to overwrite file at location: `#{filename}`"
+        else
+          raise "Not enough permissions to overwrite file at location: `#{filename}`"
+        end
+      end
+    end
+
+    file = File.open(filename, "w")
+    file << "### " << T << '\n'
+    file << '\n'
+
+    T.each do |key|
+      value = @properties[key]
+      case value
+      when Float32
+        file << key << " = " << @properties[key] << '\n'
+      when SF::Color
+        file << key << " = " << "rgba(" << value.r << ", " << value.g << ", " << 
+        value.b << ", " << value.a << ")\n"
+      when SF::Vector2f
+        file << key << " = " << "xy(" << value.x << ", " << value.y << ")\n"
+      when String
+        file << key << " = " << '"' << value << '"' << '\n'
+      else
+        raise "Invalid value type: `#{typeof(value)}`"
+      end
+    end
+
+    file.close
+  end
 end
 
 def compute_file_hash(filename : String) : StaticArray(UInt8, 20)
@@ -145,12 +201,17 @@ def compute_file_hash(filename : String) : StaticArray(UInt8, 20)
   OpenSSL::SHA1.hash(File.read(filename))
 end
 
-# puts compute_file_hash("resources/styles/button.style")
-# puts button_style = ButtonStyle.from_file("resources/styles/button.style")
+# 
+# button_style = Style(Button::Properties).from_file("resources/styles/button.style")
+# button_style.to_file("resources/styles/test.style", true)
+#
+# slider_style = Style(Slider::Properties).from_file("resources/styles/slider.style")
+# slider_style.to_file("resources/styles/test.style", true)
+#
 
 filepath = "resources/styles/button.style"
 
-button_style = ButtonStyle.from_file(filepath)
+button_style = Style(Button::Properties).from_file(filepath)
 file_hash = compute_file_hash(filepath)
 puts button_style
 
@@ -158,19 +219,16 @@ while true
   new_file_hash = compute_file_hash(filepath)
   if new_file_hash != file_hash
     begin
-      new_button_style = ButtonStyle.from_file(filepath)
+      new_button_style = Style(Button::Properties).from_file(filepath)
       button_style = new_button_style
     rescue
-      
+      # if something bad happens, just keep old style information
     ensure
       file_hash = new_file_hash
     end
 
-    # puts "I'm going to hotload this file!
     system("clear")
     puts button_style
-  else
-    # puts "I'm going to do nothing with this file!"
   end
   sleep 1
 end

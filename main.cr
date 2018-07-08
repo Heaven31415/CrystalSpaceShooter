@@ -1,8 +1,4 @@
-{% if flag?(:release) %}
-  require "./game.cr"
-{% else %}
-  require "./game_debug.cr"
-{% end %}
+require "./game_debug.cr"
 
 game = Game.new
 game.run

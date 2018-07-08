@@ -6,7 +6,7 @@ class Pickup < Unit
     definition.type = Unit::Type::EnemyWeapon
     definition.acceleration = SF.vector2f(0.0, 50.0)
     definition.max_velocity = max_velocity
-    definition.texture = Game.textures.get(texture_name)
+    definition.texture = Resources.textures.get(texture_name)
     super(definition)
   end
 
@@ -38,7 +38,7 @@ class PickupKnock < Pickup
     if other.type == Unit::Type::Player
       enemies = Game.world.get(->(unit : Unit) { unit.type == Unit::Type::Enemy })
       enemies.each do |enemy|
-        enemy.velocity = -enemy.velocity
+        enemy.velocity = -enemy.velocity # fix: it doesn't knock
       end
       kill
     end

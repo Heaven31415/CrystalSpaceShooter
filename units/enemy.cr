@@ -9,7 +9,7 @@ class EnemyFighter < Unit
     definition.type = Unit::Type::Enemy
     definition.acceleration = SF.vector2f(150.0, 200.0)
     definition.max_velocity = SF.vector2f(100.0, 200.0)
-    definition.texture = Game.textures.get("enemyFighter.png")
+    definition.texture = Resources.textures.get("enemyFighter.png")
     super(definition)
 
     @ai = Fighter.new(self)
@@ -46,7 +46,7 @@ class EnemyCarrier < Unit
     definition.acceleration = SF.vector2f(25.0, 25.0)
     definition.max_velocity = SF.vector2f(50.0, 50.0)
     definition.max_health = 25
-    definition.texture = Game.textures.get("enemyCarrier.png")
+    definition.texture = Resources.textures.get("enemyCarrier.png")
     super(definition)
 
     @ai = Carrier.new(self)
@@ -73,7 +73,7 @@ class EnemyInterceptor < Unit
     definition.type = Unit::Type::Enemy
     definition.acceleration = SF.vector2f(100.0, 100.0)
     definition.max_velocity = SF.vector2f(200.0, 200.0)
-    definition.texture = Game.textures.get("enemyInterceptor.png")
+    definition.texture = Resources.textures.get("enemyInterceptor.png")
     super(definition)
 
     @ai = Interceptor.new(self)

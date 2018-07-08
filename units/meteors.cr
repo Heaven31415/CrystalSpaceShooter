@@ -17,13 +17,13 @@ class Meteor < Unit
     definition.max_velocity = SF.vector2f(200.0, 200.0)
     case @meteor_type
     when Type::Big
-      definition.texture = Game.textures.get("meteorBig" + Random.rand(1..4).to_s + ".png")
+      definition.texture = Resources.textures.get("meteorBig" + Random.rand(1..4).to_s + ".png")
     when Type::Medium
-      definition.texture = Game.textures.get("meteorMed" + Random.rand(1..2).to_s + ".png")
+      definition.texture = Resources.textures.get("meteorMed" + Random.rand(1..2).to_s + ".png")
     when Type::Small
-      definition.texture = Game.textures.get("meteorSmall" + Random.rand(1..2).to_s + ".png")
+      definition.texture = Resources.textures.get("meteorSmall" + Random.rand(1..2).to_s + ".png")
     when Type::Tiny
-      definition.texture = Game.textures.get("meteorTiny" + Random.rand(1..2).to_s + ".png")
+      definition.texture = Resources.textures.get("meteorTiny" + Random.rand(1..2).to_s + ".png")
     else # todo: think whether it's a right way to do it
       raise "Invalid Meteor::Type enum value: #{meteor_type}"
     end

@@ -6,7 +6,7 @@ class Background < Unit
     definition = UnitDefinition.new
     definition.type = Unit::Type::Background
     definition.max_velocity = Config.background_velocity
-    definition.texture = Game.textures.get("background.png")
+    definition.texture = Resources.textures.get("background.png")
     definition.texture.repeated = true
     definition.texture_rect = Config.window_rect
 

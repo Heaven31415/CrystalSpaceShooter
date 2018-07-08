@@ -13,7 +13,7 @@ class Laser < Unit
       definition.type = Unit::Type::EnemyWeapon
       definition.acceleration = SF.vector2f(0.0, 800.0)
       definition.max_velocity = SF.vector2f(0.0, 200.0)
-      definition.texture = Game.textures.get("laserGreen.png")
+      definition.texture = Resources.textures.get("laserGreen.png")
       super(definition)
       self.rotation = 180.0
     when WeaponType::Player
@@ -21,7 +21,7 @@ class Laser < Unit
       definition.type = Unit::Type::PlayerWeapon
       definition.acceleration = SF.vector2f(0.0, -800.0)
       definition.max_velocity = SF.vector2f(0.0, 400.0)
-      definition.texture = Game.textures.get("laserRed.png")
+      definition.texture = Resources.textures.get("laserRed.png")
       super(definition)
     else # todo: rework it a litle
       raise "Invalid WeaponType value: #{weapon_type}"

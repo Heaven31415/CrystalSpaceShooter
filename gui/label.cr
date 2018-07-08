@@ -1,7 +1,7 @@
-require "crsfml/graphics"
+require "../resources.cr"
 
 class Label < SF::Text
-  @@font : SF::Font = Game.fonts.get("calibri.ttf")
+  @@font : SF::Font = Resources.fonts.get("calibri.ttf")
   @@minimal_size = 10
 
   def initialize(string : String, character_size : Int, @width : Float32)

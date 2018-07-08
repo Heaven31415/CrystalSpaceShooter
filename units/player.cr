@@ -1,7 +1,13 @@
 require "./unit.cr"
 require "./weapons.cr"
+require "../common/time_callback.cr"
 
 class Player < Unit
+  enum WeaponMode
+    Missile,
+    Beam
+  end
+
   def initialize
     definition = UnitDefinition.new
     definition.type = Unit::Type::Player
@@ -10,6 +16,13 @@ class Player < Unit
     definition.max_health = 25
     definition.texture = Game.textures.get("player.png")
     super(definition)
+
+    @weapon_mode = WeaponMode::Missile
+    @jump_ready = false
+    @jump_timer = TimeCallback.new
+    @jump_timer.add(SF.seconds(1)) do
+      @jump_ready = true
+    end
   end
 
   def handle_input(event : SF::Event)
@@ -18,6 +31,22 @@ class Player < Unit
       case event.code
       when SF::Keyboard::Space
         fire_laser
+      when SF::Keyboard::Q
+        if @jump_ready
+          @velocity.x = -@max_velocity.x
+          @jump_ready = false
+        end
+      when SF::Keyboard::W
+        if @weapon_mode == WeaponMode::Missile
+          @weapon_mode = WeaponMode::Beam
+        else
+          @weapon_mode = WeaponMode::Missile
+        end
+      when SF::Keyboard::E
+        if @jump_ready
+          @velocity.x = @max_velocity.x
+          @jump_ready = false
+        end
       end
     end
   end
@@ -51,6 +80,8 @@ class Player < Unit
     end
 
     super
+
+    @jump_timer.update(dt)
   end
 
   def on_collision(other)
@@ -62,12 +93,31 @@ class Player < Unit
   end
 
   private def fire_laser
-    if @children.size < 5
-      laser = Laser.new(WeaponType::Player)
-      laser.position = self.position
-      add_child(laser)
-      Game.world.add(laser)
-      Game.audio.play("laser.wav")
+    case @weapon_mode
+    when WeaponMode::Missile
+      if @children.size < 5
+        laser = Laser.new(WeaponType::Player, 5)
+        laser.position = self.position
+        laser.scale = {1.25f32, 1.0f32}
+
+        add_child(laser)
+        Game.world.add(laser)
+        #Game.audio.play("laser.wav")
+      end
+    when WeaponMode::Beam
+      if @children.size < 49
+        left_laser = Laser.new(WeaponType::Player, 1)
+        right_laser = Laser.new(WeaponType::Player, 1)
+
+        left_laser.position = self.position - {10f32, 0f32}
+        right_laser.position = self.position + {10f32, 0f32}
+        add_child(left_laser)
+        add_child(right_laser)
+
+        Game.world.add(left_laser)
+        Game.world.add(right_laser)
+        #Game.audio.play("laser.wav")
+      end
     end
   end
 end

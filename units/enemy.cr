@@ -25,6 +25,16 @@ class EnemyFighter < Unit
   def on_collision(other)
     other.damage(1)
   end
+
+  def fire_laser
+    if @children.size < 3
+      laser = Laser.new(WeaponType::Enemy, 1)
+      laser.position = self.position
+      laser.set_scale(self.scale.x * 0.8f32, self.scale.y * 0.8f32)
+      add_child(laser)
+      Game.world.add(laser)
+    end
+  end
 end
 
 class EnemyCarrier < Unit
@@ -83,7 +93,7 @@ class EnemyInterceptor < Unit
 
   def fire_laser
     if @children.size < 3
-      laser = Laser.new(WeaponType::Enemy)
+      laser = Laser.new(WeaponType::Enemy, 1)
       laser.position = self.position
       laser.set_scale(0.15, 0.15)
       add_child(laser)

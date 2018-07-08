@@ -6,7 +6,7 @@ enum WeaponType
 end
 
 class Laser < Unit
-  def initialize(weapon_type : WeaponType)
+  def initialize(weapon_type : WeaponType, @damage : Int32)
     case weapon_type
     when WeaponType::Enemy
       definition = UnitDefinition.new
@@ -34,6 +34,6 @@ class Laser < Unit
   end
 
   def on_collision(other)
-    other.damage(1)
+    other.damage(@damage)
   end
 end

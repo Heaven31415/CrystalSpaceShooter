@@ -1,57 +1,29 @@
-require "./common/resource_holder.cr"
 require "./common/sound_system.cr"
-require "./config.cr"
-require "./ui/hud.cr"
-require "./widgets/button.cr"
-require "./widgets/slider.cr"
+require "./gui/button.cr"
+require "./gui/cursor.cr"
+require "./gui/hud.cr"
 require "./world.cr"
-require "crsfml"
-require "crsfml/audio"
-
-class Cursor
-  include SF::Drawable
-
-  def initialize
-    @cursor = SF::Sprite.new(Game.textures.get("cursor.png"))
-    @cursor.color = SF.color(255, 155, 155, 155)
-    @visible = false
-  end
-
-  def handle_input(event : SF::Event)
-    case event
-    when SF::Event::MouseEntered
-      @visible = true
-    when SF::Event::MouseLeft
-      @visible = false
-    when SF::Event::MouseMoved
-      if !@visible
-        @visible = true
-      else
-        @cursor.position = {event.x, event.y}
-      end
-    end
-  end
-
-  def draw(target, states)
-    target.draw(@cursor, states) if @visible
-  end
-end
-
-alias GUI = Hash(String, Button)
 
 class Game
   @@TimePerFrame = SF.seconds(1.0 / Config.fps)
-  @@fonts = ResourceHolder(SF::Font).new(Config.fonts_path, Config.fonts_ext)
-  @@sounds = ResourceHolder(SF::SoundBuffer).new(Config.sounds_path, Config.sounds_ext)
-  @@textures = ResourceHolder(SF::Texture).new(Config.textures_path, Config.textures_ext)
-  @@audio = SoundSystem.new(@@sounds)
+  @@audio = SoundSystem.new(Resources.sounds)
   @@world = World.new
   @@window = SF::RenderWindow.new(SF::VideoMode.new(2 * Config.window_size.x, Config.window_size.y), Config.window_name)
-  @texture = SF::RenderTexture.new(Config.window_size.x, Config.window_size.y)
-  @target : Nil | Unit | World
-  @gui : GUI
 
-  class_getter fonts, sounds, textures, audio, world, window
+  @clock = SF::Clock.new
+  @dt = SF::Time.new
+  @running_mode = RunningMode::Continuous
+  @step = false
+
+  @cursor = Cursor.new
+  @debug_text = SF::Text.new("", Resources.fonts.get("calibri.ttf"), 20)
+  @target : Nil | Unit | World
+  @texture = SF::RenderTexture.new(Config.window_size.x, Config.window_size.y)
+  
+  @hud = HUD.new
+  @gui : Hash(String, Button)
+
+  class_getter audio, world, window
 
   enum RunningMode
     Continuous
@@ -65,17 +37,8 @@ class Game
     @@window.key_repeat_enabled = false
     @@window.mouse_cursor_visible = false
 
-    @step = false
-    @running_mode = RunningMode::Continuous
-    @debug_text = SF::Text.new("", @@fonts.get("calibri.ttf"), 20)
-    @debug_text.position = {@@window.size.x / 2 + 10, 80}
-
-    @clock = SF::Clock.new
-    @dt = SF::Time.new
-
-    @hud = HUD.new
+    @debug_text.position = {@@window.size.x / 2 + 10, 280}
     @hud.position = {5, 5}
-    @cursor = Cursor.new
     @gui = build_gui
   end
 
@@ -136,7 +99,7 @@ class Game
       end
       @@world.handle_input(event)
       @cursor.handle_input(event)
-      @gui.each { |k, w| w.handle_input(event) }
+      @gui.each { |name, widget| widget.handle_input(event) }
     end
   end
 
@@ -157,7 +120,7 @@ class Game
     @@window.clear
     @@window.draw(SF::Sprite.new(@texture.texture))
     @@window.draw(@debug_text)
-    @gui.each { |k, w| @@window.draw(w) }
+    @gui.each { |name, widget| @@window.draw(widget) }
     @@window.draw(@cursor)
     @@window.display
   end
@@ -168,8 +131,8 @@ class Game
     end
   end
 
-  private def build_gui
-    gui = {} of String => Button
+  private def build_gui : Hash(String, Button)
+    gui = Hash(String, Button).new
 
     button = Button.new({150, 60})
     button.position = {@@window.size.x / 2 + 10, 10}

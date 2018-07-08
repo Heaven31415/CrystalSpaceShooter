@@ -37,6 +37,10 @@ class Meteor < Unit
     end
   end
 
+  def on_collision(other)
+    other.damage((@meteor_type.value - 4).abs)
+  end
+
   def update(dt)
     @velocity.y += @acceleration.y * dt.as_seconds
     super

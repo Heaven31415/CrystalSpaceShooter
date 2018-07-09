@@ -84,15 +84,15 @@ class DirectoryWatcher
     changed_files = files[2]
 
     created_files.each do |file|
-      file_created(file)
+      file_created(File.join(@dir_path, file))
     end
 
     deleted_files.each do |file|
-      file_deleted(file)
+      file_deleted(File.join(@dir_path, file))
     end
 
     changed_files.each do |file|
-      file_changed(file)
+      file_changed(File.join(@dir_path, file))
     end
 
     @hashes = new_hashes

@@ -1,7 +1,10 @@
 require "./gui/cursor.cr"
 require "./gui/hot_button.cr"
+require "./gui/hot_label.cr"
 require "./common/utilities.cr"
 require "./resources"
+
+alias Widget = Button | Label
 
 class Designer
   @@TimePerFrame = SF.seconds(1.0 / Config.fps)
@@ -11,7 +14,7 @@ class Designer
   @cursor = Cursor.new
   @dt = SF::Time.new
   @watcher = DirectoryWatcher.new("resources/styles")
-  @gui : Hash(String, Button)
+  @gui : Hash(String, Widget)
 
   class_getter window
 
@@ -22,7 +25,8 @@ class Designer
     @@window.key_repeat_enabled = false
     @@window.mouse_cursor_visible = false
 
-    @gui = build_gui
+    @gui = Hash(String, Widget).new
+    build_gui
   end
 
   def run
@@ -54,7 +58,7 @@ class Designer
   end
 
   def update(dt : SF::Time)
-    @watcher.hotload
+    @watcher.update
   end
 
   def render
@@ -64,31 +68,71 @@ class Designer
     @@window.display
   end
 
-  private def build_gui : Hash(String, Button)
-    gui = Hash(String, Button).new
+  private def build_gui
+    # build widgets from already created files
+    directory_path = @watcher.directory_path
+    Dir.each_child(directory_path) do |filename|
+      ext = File.extname(filename)
+      name = filename
+      properties_path = File.join(directory_path, filename)
 
-    style_path = "resources/styles/test.button"
-    name = "Test"
-
-    button = Button.new(Style(Button).from_file(style_path))
-    button.position = {15f32, 15f32}
-    button.on_click do
-      puts "`#{name}` button on_click event"
+      # todo: fix me, if it's possible to obtain type information some other way
+      begin 
+        case ext
+        when .match(/button/)
+          build_widget(Button, name, properties_path)
+        when .match(/label/)
+          build_widget(Label, name, properties_path)
+        end
+      rescue ex 
+        puts "Exception: #{ex.message}"
+      end
     end
 
-    @watcher.on_file_changed do |file|
-      if file == style_path
+    @watcher.on_file_created do |filename|
+      ext = File.extname(filename)
+      name = File.basename(filename)
+      properties_path = filename
+
+      # todo: fix me, if it's possible to obtain type information some other way
+      begin
+        case ext
+        when .match(/button/)
+          build_widget(Button, name, properties_path)
+        when .match(/label/)
+          build_widget(Label, name, properties_path)
+        end
+      rescue ex
+        puts "Exception: #{ex.message}"
+      end
+    end
+  end
+
+  private def build_widget(t : T.class, name : String, properties_path : String) forall T
+    widget = T.new(Properties(T).from_file(properties_path))
+
+    @watcher.on_file_changed do |filename|
+      if filename == properties_path
         begin
-          style = Style(Button).from_file(style_path)
-          button.style = style
+          properties = Properties(T).from_file(properties_path)
+          widget.properties = properties
         rescue ex
           puts "Exception: #{ex.message}"
         end
       end
     end
-    
-    gui[name] = button
 
-    gui
+    @gui[name] = widget
+  end
+end
+
+def string_to_class(string : String) : Class
+  case string.downcase
+  when .match(/button/)
+    return Button
+  when .match(/label/)
+    return Label
+  else
+    return Nil
   end
 end

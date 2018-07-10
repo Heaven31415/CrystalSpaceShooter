@@ -1,4 +1,4 @@
-require "./style.cr"
+require "./properties.cr"
 
 class Button < SF::RectangleShape
   enum State
@@ -7,39 +7,42 @@ class Button < SF::RectangleShape
     Hover
   end
 
-  @style : Style(Button)
+  @properties : Properties(Button)
 
-  def style=(@style)
-    self.size = @style["Size", SF::Vector2f]
-    self.fill_color = @style["NormalColor", SF::Color]
-    self.outline_color = @style["OutlineColor", SF::Color]
-    self.outline_thickness = @style["OutlineThickness", Float32]
-    self.texture = Resources.textures.get(@style["TextureName", String])
+  def properties=(@properties)
+    self.size = @properties["Size", SF::Vector2f]
+    self.fill_color = @properties["NormalColor", SF::Color]
+    self.outline_color = @properties["OutlineColor", SF::Color]
+    self.outline_thickness = @properties["OutlineThickness", Float32]
+    self.texture = Resources.textures.get(@properties["TextureName", String])
+
+    # transformation
+    self.origin = @properties["Origin", SF::Vector2f]
+    self.scale = @properties["Scale", SF::Vector2f]
+    self.position = @properties["Position", SF::Vector2f]
+    self.rotation = @properties["Rotation", Float32]
   end
 
-  def style
-    @style
+  def properties
+    @properties
   end
 
-  def initialize(@style)
-    super(@style["Size", SF::Vector2f])
+  def initialize(@properties)
+    super()
     @state = State::Normal
     @need_update = false
-    self.fill_color = @style["NormalColor", SF::Color]
-    self.outline_color = @style["OutlineColor", SF::Color]
-    self.outline_thickness = @style["OutlineThickness", Float32]
-    self.texture = Resources.textures.get(@style["TextureName", String])
+    self.properties = @properties
   end
 
   def draw(target, states)
     if @need_update
       case @state
         when .normal?
-          self.fill_color = @style["NormalColor", SF::Color]
+          self.fill_color = @properties["NormalColor", SF::Color]
         when .pressed?
-          self.fill_color = @style["PressedColor", SF::Color]
+          self.fill_color = @properties["PressedColor", SF::Color]
         when .hover?
-          self.fill_color = @style.["HoverColor", SF::Color]
+          self.fill_color = @properties["HoverColor", SF::Color]
       end
       @need_update = false
     end

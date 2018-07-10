@@ -1,13 +1,13 @@
 require "crsfml/graphics"
 require "openssl/sha1.cr"
 
-alias Property = Float32 | SF::Color | SF::Vector2f | String
+alias Property = Float32 | SF::Color | SF::Vector2f | String | Int32
 
-class Style(T)
+class Properties(T)
   LINE_FORMAT_REGEX = /^([a-zA-Z0-9]+)\s?=\s?(.+)$/
   COLOR_REGEX = /^rgba\((.{1,3})\,\s(.{1,3})\,\s(.{1,3})\,\s(.{1,3})\)$/
   VECTOR_REGEX = /^xy\((.+)\,\s(.+)\)$/
-  STRING_REGEX = /^\"([a-zA-z0-9_\.]+)\"$/
+  STRING_REGEX = /^\"(.*)\"$/
 
   def initialize
     @properties = {} of String => Property
@@ -18,11 +18,21 @@ class Style(T)
   end
 
   def [](key : String, t : T.class) forall T
+    unless @properties.has_key? key
+      raise "Unable to find property: `#{key}`"
+    end
     @properties[key].as(T)
   end
 
   def [](key : String) : Property
+    unless @properties.has_key? key
+      raise "Unable to find property: `#{key}`"
+    end
     @properties[key]
+  end
+
+  def has_key?(key : String) : Bool
+    @properties.has_key? key
   end
 
   def to_s(io)
@@ -70,7 +80,7 @@ class Style(T)
     end
     
     lines.shift # remove header line
-    style = Style(T).new
+    style = Properties(T).new
 
     lines.each do |line|
       matches = line[:content].match(LINE_FORMAT_REGEX)
@@ -112,6 +122,8 @@ class Style(T)
       elsif matches = property_value.match(STRING_REGEX) # "string"
         str = matches[1]
         style[property_name] = str
+      elsif value = property_value.to_i32? # int32
+        style[property_name] = value
       elsif value = property_value.to_f32? # float32
         style[property_name] = value
       else

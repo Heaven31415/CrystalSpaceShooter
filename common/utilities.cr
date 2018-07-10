@@ -17,125 +17,145 @@ module Math
   end
 end
 
-def compute_file_hash(filename : String) : StaticArray(UInt8, 20)
+alias FileHash = StaticArray(UInt8, 20)
+
+def compute_filehash(filename : String) : FileHash
   unless File.exists? filename
-    raise "Unable to find file at location: `#{filename}`"
+    raise "Unable to find file at: `#{filename}`"
+  end
+
+  unless File.readable? filename
+    raise "Unable to read file at: `#{filename}`"
   end
 
   OpenSSL::SHA1.hash(File.read(filename))
 end
 
-alias DirectoryHashes = Array({String, StaticArray(UInt8, 20)})
+alias DirectoryHash = Array({name: String, hash: FileHash})
 
-def compute_directory_hashes(dir_path : String) : DirectoryHashes
-  hashes = DirectoryHashes.new
-  Dir.each_child(dir_path) do |filename|
-    hashes << {filename, compute_file_hash(File.join(dir_path, filename))}
+def compute_directory_hash(directory_path : String) : DirectoryHash
+  unless Dir.exists? directory_path
+    raise "Unable to find directory at: `#{directory_path}`"
   end
-  hashes
+
+  hash = DirectoryHash.new
+  Dir.each_child(directory_path) do |filename|
+    hash << {name: filename, hash: compute_filehash(File.join(directory_path, filename))}
+  end
+
+  hash
 end
 
-def compare_directory_hashes(dir_path : String, old_hashes : DirectoryHashes, new_hashes : DirectoryHashes) : {Array(String), Array(String), Array(String)}
+def get_created_files(old_hash : DirectoryHash, new_hash : DirectoryHash) : Array(String)
   created_files = Array(String).new
+
+  new_hash.each do |n|
+    unless old_hash.find { |o| o[:name] == n[:name]}
+      created_files << n[:name]
+    end 
+  end
+
+  created_files
+end
+
+def get_deleted_files(old_hash : DirectoryHash, new_hash : DirectoryHash) : Array(String)
   deleted_files = Array(String).new
+  
+  old_hash.each do |o|
+    unless new_hash.find { |n| o[:name] == n[:name]}
+      deleted_files << o[:name]
+    end 
+  end
 
-  old_hashes.each do |old_element|
-    unless new_hashes.find { |new_element| new_element[0] == old_element[0]}
-      deleted_files << old_element[0]
+  deleted_files
+end
+
+def get_changed_files(old_hash : DirectoryHash, new_hash : DirectoryHash, directory_path : String) : Array(String)
+  hash = DirectoryHash.new
+
+  old_hash.each do |o|
+    new_hash.each do |n|
+      if o[:name] == n[:name]
+        hash << o
+      end
     end
   end
 
-  new_hashes.each do |new_element|
-    unless old_hashes.find { |old_element| old_element[0] == new_element[0]}
-      created_files << new_element[0]
+  changed_files = Array(String).new
+
+  hash.each do |o|
+    if o[:hash] != compute_filehash(File.join(directory_path, o[:name]))
+      changed_files << o[:name]
     end
   end
 
-  old_files = Array(String).new(old_hashes.size)
-  old_hashes.each do |old_element|
-    old_files << old_element[0]
-  end
-
-  changed_files = (old_files - deleted_files).select! do |file|
-    old_hash = old_hashes.find { |old_element| old_element[0] == file}.as({String, StaticArray(UInt8, 20)})[1]
-    new_hash = compute_file_hash(File.join(dir_path, file))
-    old_hash != new_hash
-  end
-
-  {created_files, deleted_files, changed_files}
+  changed_files
 end
 
 class DirectoryWatcher
-  @hashes : Array({String, StaticArray(UInt8, 20)})
+  @hash : DirectoryHash
 
-  def initialize(@dir_path : String)
-    unless Dir.exists? @dir_path
-      raise "Unable to find directory at location: `#{@dir_path}`"
+  property directory_path
+
+  def initialize(@directory_path : String)
+    unless Dir.exists? @directory_path
+      raise "Unable to find directory at: `#{@directory_path}`"
     end
 
-    @hashes = compute_directory_hashes(@dir_path)
+    @hash = compute_directory_hash(@directory_path)
+    @on_file_created_callbacks = Array(Proc(String, Nil)).new
+    @on_file_deleted_callbacks = Array(Proc(String, Nil)).new
+    @on_file_changed_callbacks = Array(Proc(String, Nil)).new
   end
 
-  def hotload
-    new_hashes = compute_directory_hashes(@dir_path)
-    files = compare_directory_hashes(@dir_path, @hashes, new_hashes)
-    created_files = files[0]
-    deleted_files = files[1]
-    changed_files = files[2]
+  def update
+    new_hash = compute_directory_hash(@directory_path)
+    created_files = get_created_files(@hash, new_hash)
+    deleted_files = get_deleted_files(@hash, new_hash)
+    changed_files = get_changed_files(@hash, new_hash, @directory_path)
 
-    created_files.each do |file|
-      file_created(File.join(@dir_path, file))
+    created_files.each do |filename|
+      file_created(File.join(@directory_path, filename))
     end
 
-    deleted_files.each do |file|
-      file_deleted(File.join(@dir_path, file))
+    deleted_files.each do |filename|
+      file_deleted(File.join(@directory_path, filename))
     end
 
-    changed_files.each do |file|
-      file_changed(File.join(@dir_path, file))
+    changed_files.each do |filename|
+      file_changed(File.join(@directory_path, filename))
     end
 
-    @hashes = new_hashes
+    @hash = new_hash
   end
 
   def on_file_created(&block : String ->)
-    @on_file_created_callback = block
+    @on_file_created_callbacks << block
   end
 
   private def file_created(filename : String)
-    if callback = @on_file_created_callback
+    @on_file_created_callbacks.each do |callback|
       callback.call(filename)
     end
   end
 
   def on_file_deleted(&block : String ->)
-    @on_file_deleted_callback = block
+    @on_file_deleted_callbacks << block
   end
 
   private def file_deleted(filename : String)
-    if callback = @on_file_deleted_callback
+    @on_file_deleted_callbacks.each do |callback|
       callback.call(filename)
     end
   end
 
   def on_file_changed(&block : String ->)
-    @on_file_changed_callback = block
+    @on_file_changed_callbacks << block
   end
 
   private def file_changed(filename : String)
-    if callback = @on_file_changed_callback
+    @on_file_changed_callbacks.each do |callback|
       callback.call(filename)
     end
   end
 end
-
-# # watcher test
-# watcher = DirectoryWatcher.new("tmp")
-# watcher.on_file_created { |file| puts "New file has been created: `#{file}`" }
-# watcher.on_file_deleted { |file| puts "File has been deleted: `#{file}`" }
-# watcher.on_file_changed { |file| puts "File has been changed: `#{file}`"}
-
-# while true
-#   watcher.hotload
-#   sleep 1
-# end

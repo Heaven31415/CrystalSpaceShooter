@@ -1,7 +1,7 @@
-require "./common/sound_system.cr"
-require "./gui/button.cr"
-require "./gui/cursor.cr"
-require "./gui/hud.cr"
+require "../common/sound_system.cr"
+require "../gui/button.cr"
+require "../gui/cursor.cr"
+require "../gui/hud.cr"
 require "./world.cr"
 
 class Game

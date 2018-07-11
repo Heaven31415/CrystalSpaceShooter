@@ -1,8 +1,8 @@
-require "./gui/cursor.cr"
-require "./gui/hot_button.cr"
-require "./gui/hot_label.cr"
-require "./common/utilities.cr"
-require "./resources"
+require "../gui/cursor.cr"
+require "../gui/hot_button.cr"
+require "../gui/hot_label.cr"
+require "../common/utilities.cr"
+require "../common/resources.cr"
 
 alias Widget = Button | Label
 

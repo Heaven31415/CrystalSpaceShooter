@@ -1,5 +1,5 @@
-require "./common/config.cr"
-require "./common/resource_holder.cr"
+require "./config.cr"
+require "./resource_holder.cr"
 require "crsfml/audio"
 require "crsfml/graphics"
 

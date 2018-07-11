@@ -1,5 +1,5 @@
-require "./common/time_callback.cr"
-require "./units/*"
+require "../common/time_callback.cr"
+require "../units/*"
 
 class World
   def initialize

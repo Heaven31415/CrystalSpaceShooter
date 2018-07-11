@@ -1,4 +1,4 @@
-require "../resources.cr"
+require "../common/resources.cr"
 
 class Label < SF::Text
   @@font : SF::Font = Resources.fonts.get("calibri.ttf")

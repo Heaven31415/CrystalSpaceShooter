@@ -2,6 +2,7 @@ require "./properties.cr"
 
 class Label < SF::Text
   @properties : Properties(Label)
+  @layer = 0
 
   def properties=(@properties)
     self.font = Resources.fonts.get(@properties["Font", String])
@@ -12,18 +13,21 @@ class Label < SF::Text
     self.outline_thickness = @properties["OutlineThickness", Float32]
 
     # transformation
-    self.origin = @properties["Origin", SF::Vector2f]
+    apply_origin
     self.scale = @properties["Scale", SF::Vector2f]
     self.position = @properties["Position", SF::Vector2f]
     self.rotation = @properties["Rotation", Float32]
 
-    if @properties.has_key? "Style"
-      apply_style
-    end
+    apply_style
+    apply_layer
   end
 
   def properties
     @properties
+  end
+
+  def layer
+    @layer
   end
 
   def initialize(@properties)
@@ -36,6 +40,11 @@ class Label < SF::Text
   end
 
   private def apply_style
+    unless @properties.has_key? "Style"
+      self.style = SF::Text::Style::Regular
+      return
+    end
+
     value = 0
     styles = @properties["Style", String].split('|').uniq!
     styles.each do |style|
@@ -48,8 +57,36 @@ class Label < SF::Text
     self.style = SF::Text::Style.new(value) 
   end
 
+  private def apply_origin
+    unless @properties.has_key? "Origin" 
+      self.center_origin
+    end
+
+    value = @properties["Origin"]
+
+    case value
+    when String
+      case value
+      when "Center"
+        center_origin
+      else
+        center_origin
+      end
+    when SF::Vector2f
+      self.origin = value
+    end
+  end
+
   private def center_origin
-    bounds = global_bounds
-    set_origin(bounds.left + bounds.width / 2.0, bounds.top + bounds.height / 2.0)
+    bounds = local_bounds
+    self.origin = {bounds.left + bounds.width / 2.0, bounds.top + bounds.height / 2.0}
+  end
+
+  private def apply_layer
+    unless @properties.has_key? "Layer" 
+      @layer = 0
+    end
+
+    @layer = @properties["Layer", Int32]    
   end
 end

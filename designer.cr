@@ -64,7 +64,13 @@ class Designer
 
   def render
     @@window.clear
-    @gui.each_value { |widget| @@window.draw(widget) }
+
+    sorted_widgets = Array(Widget).new(@gui.size)
+    @gui.each_value { |widget| sorted_widgets << widget }
+    sorted_widgets.sort! { |a, b| a.layer <=> b.layer }
+
+    sorted_widgets.each { |widget| @@window.draw(widget) }
+
     @@window.draw(@cursor)
     @@window.display
   end
@@ -137,15 +143,18 @@ class Designer
   private def setup_gui
     # load widgets from already existing files
     Dir.each_child(@@WidgetDirectory) do |filename|
-      filename = File.join(@@WidgetDirectory, filename) 
+      filename = File.join(@@WidgetDirectory, filename)
+      puts "Loading widget: `#{File.basename(filename)}`"
       load_widget(filename)
     end
 
     @watcher.on_file_created("load") do |filename|
+      puts "Loading widget: `#{File.basename(filename)}`"
       load_widget(filename)
     end
 
     @watcher.on_file_deleted("unload") do |filename|
+      puts "Unloading widget: `#{File.basename(filename)}`"
       unload_widget(filename)
     end
   end

@@ -8,6 +8,7 @@ class Button < SF::RectangleShape
   end
 
   @properties : Properties(Button)
+  @layer = 0
 
   def properties=(@properties)
     self.size = @properties["Size", SF::Vector2f]
@@ -17,14 +18,20 @@ class Button < SF::RectangleShape
     self.texture = Resources.textures.get(@properties["TextureName", String])
 
     # transformation
-    self.origin = @properties["Origin", SF::Vector2f]
+    apply_origin
     self.scale = @properties["Scale", SF::Vector2f]
     self.position = @properties["Position", SF::Vector2f]
     self.rotation = @properties["Rotation", Float32]
+
+    apply_layer
   end
 
   def properties
     @properties
+  end
+
+  def layer
+    @layer
   end
 
   def initialize(@properties)
@@ -87,5 +94,38 @@ class Button < SF::RectangleShape
     bounds = global_bounds
     x >= bounds.left && x < bounds.left + bounds.width &&
     y >= bounds.top && y < bounds.top + bounds.height
+  end
+
+  private def apply_origin
+    unless @properties.has_key? "Origin" 
+      self.center_origin
+    end
+
+    value = @properties["Origin"]
+
+    case value
+    when String
+      case value
+      when "Center"
+        center_origin
+      else
+        center_origin
+      end
+    when SF::Vector2f
+      self.origin = value
+    end
+  end
+
+  private def center_origin
+    bounds = local_bounds
+    self.origin = {bounds.left + bounds.width / 2.0, bounds.top + bounds.height / 2.0}
+  end
+
+  private def apply_layer
+    unless @properties.has_key? "Layer" 
+      @layer = 0
+    end
+
+    @layer = @properties["Layer", Int32]    
   end
 end

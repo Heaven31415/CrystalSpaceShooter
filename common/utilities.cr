@@ -103,9 +103,9 @@ class DirectoryWatcher
     end
 
     @hash = compute_directory_hash(@directory_path)
-    @on_file_created_callbacks = Array(Proc(String, Nil)).new
-    @on_file_deleted_callbacks = Array(Proc(String, Nil)).new
-    @on_file_changed_callbacks = Array(Proc(String, Nil)).new
+    @on_file_created = Hash(String, Proc(String, Nil)).new
+    @on_file_deleted = Hash(String, Proc(String, Nil)).new
+    @on_file_changed = Hash(String, Proc(String, Nil)).new
   end
 
   def update
@@ -129,32 +129,32 @@ class DirectoryWatcher
     @hash = new_hash
   end
 
-  def on_file_created(&block : String ->)
-    @on_file_created_callbacks << block
+  def on_file_created(callback_id : String, &block : String ->)
+    @on_file_created[callback_id] = block
   end
 
   private def file_created(filename : String)
-    @on_file_created_callbacks.each do |callback|
+    @on_file_created.each_value do |callback|
       callback.call(filename)
     end
   end
 
-  def on_file_deleted(&block : String ->)
-    @on_file_deleted_callbacks << block
+  def on_file_deleted(callback_id : String, &block : String ->)
+    @on_file_deleted[callback_id] = block
   end
 
   private def file_deleted(filename : String)
-    @on_file_deleted_callbacks.each do |callback|
+    @on_file_deleted.each_value do |callback|
       callback.call(filename)
     end
   end
 
-  def on_file_changed(&block : String ->)
-    @on_file_changed_callbacks << block
+  def on_file_changed(callback_id : String, &block : String ->)
+    @on_file_changed[callback_id] = block
   end
 
   private def file_changed(filename : String)
-    @on_file_changed_callbacks.each do |callback|
+    @on_file_changed.each_value do |callback|
       callback.call(filename)
     end
   end

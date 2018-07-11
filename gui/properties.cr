@@ -75,7 +75,7 @@ class Properties(T)
     end
 
     header = lines[0][:content]
-    unless header.match(/###\s?+#{T.name}/)
+    unless header.match(/^###\s?+#{T.name}$/)
       raise "Unable to find `#{T.name}` header in file: `#{filename}`"
     end
     

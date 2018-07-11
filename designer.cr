@@ -8,12 +8,13 @@ alias Widget = Button | Label
 
 class Designer
   @@TimePerFrame = SF.seconds(1.0 / Config.fps)
+  @@WidgetDirectory = "resources/styles"
   @@window = SF::RenderWindow.new(SF::VideoMode.new(Config.window_size.x, 4 * Config.window_size.y / 5), Config.window_name)
 
   @clock = SF::Clock.new
   @cursor = Cursor.new
   @dt = SF::Time.new
-  @watcher = DirectoryWatcher.new("resources/styles")
+  @watcher = DirectoryWatcher.new(@@WidgetDirectory)
   @gui : Hash(String, Widget)
 
   class_getter window
@@ -26,7 +27,7 @@ class Designer
     @@window.mouse_cursor_visible = false
 
     @gui = Hash(String, Widget).new
-    build_gui
+    setup_gui
   end
 
   def run
@@ -53,7 +54,7 @@ class Designer
         end
       end
       @cursor.handle_input(event)
-      @gui.each { |name, widget| widget.handle_input(event) }
+      @gui.each_value { |widget| widget.handle_input(event) }
     end
   end
 
@@ -63,76 +64,89 @@ class Designer
 
   def render
     @@window.clear
-    @gui.each { |name, widget| @@window.draw(widget) }
+    @gui.each_value { |widget| @@window.draw(widget) }
     @@window.draw(@cursor)
     @@window.display
   end
 
-  private def build_gui
-    # build widgets from already created files
-    directory_path = @watcher.directory_path
-    Dir.each_child(directory_path) do |filename|
-      ext = File.extname(filename)
-      name = filename
-      properties_path = File.join(directory_path, filename)
-
-      # todo: fix me, if it's possible to obtain type information some other way
-      begin 
-        case ext
-        when .match(/button/)
-          build_widget(Button, name, properties_path)
-        when .match(/label/)
-          build_widget(Label, name, properties_path)
+  private def load_widget(t : T.class, filename : String) forall T
+    begin
+      properties = Properties(T).from_file(filename)
+      widget = T.new(properties)
+      @gui[filename] = widget
+      # watch for changes in filename and when they happen
+      # reload properties for this widget
+      @watcher.on_file_changed(filename) do |file|
+        if file == filename
+          begin 
+            properties = Properties(T).from_file(filename)
+            widget.properties = properties
+          rescue ex : Exception
+            puts "Exception: #{ex.message}"
+          end
         end
-      rescue ex 
-        puts "Exception: #{ex.message}"
       end
-    end
 
-    @watcher.on_file_created do |filename|
-      ext = File.extname(filename)
-      name = File.basename(filename)
-      properties_path = filename
-
-      # todo: fix me, if it's possible to obtain type information some other way
-      begin
-        case ext
-        when .match(/button/)
-          build_widget(Button, name, properties_path)
-        when .match(/label/)
-          build_widget(Label, name, properties_path)
+    rescue ex : Exception
+      puts "Exception: #{ex.message}"
+      # watch for changes in properties and when they happen
+      # try again to build properties and widget
+      @watcher.on_file_changed(filename) do |file|
+        if file == filename
+          begin
+            properties = Properties(T).from_file(filename)
+            widget = T.new(properties)
+            @gui[filename] = widget
+            # on success, change callback for this filename, so
+            # you won't build this widget again and you will watch
+            # for changes in properties
+            @watcher.on_file_changed(filename) do |file|
+              if file == filename
+                begin 
+                  properties = Properties(T).from_file(filename)
+                  widget.properties = properties
+                rescue ex : Exception
+                  puts "Exception: #{ex.message}"
+                end
+              end
+            end
+          rescue ex : Exception
+            puts "Exception: #{ex.message}"
+          end
         end
-      rescue ex
-        puts "Exception: #{ex.message}"
       end
     end
   end
 
-  private def build_widget(t : T.class, name : String, properties_path : String) forall T
-    widget = T.new(Properties(T).from_file(properties_path))
+  private def load_widget(filename : String)
+    case File.extname(filename)
+    when ".button"
+      load_widget(Button, filename)
+    when ".label"
+      load_widget(Label, filename)
+    else
+      puts "Unknown widget extension: `#{File.extname(filename)}`"
+    end
+  end
 
-    @watcher.on_file_changed do |filename|
-      if filename == properties_path
-        begin
-          properties = Properties(T).from_file(properties_path)
-          widget.properties = properties
-        rescue ex
-          puts "Exception: #{ex.message}"
-        end
-      end
+  private def unload_widget(filename : String)
+    # filenames serve as keys
+    @gui.delete(filename)
+  end
+
+  private def setup_gui
+    # load widgets from already existing files
+    Dir.each_child(@@WidgetDirectory) do |filename|
+      filename = File.join(@@WidgetDirectory, filename) 
+      load_widget(filename)
     end
 
-    @gui[name] = widget
-  end
-end
+    @watcher.on_file_created("load") do |filename|
+      load_widget(filename)
+    end
 
-def string_to_class(string : String) : Class
-  case string.downcase
-  when .match(/button/)
-    return Button
-  when .match(/label/)
-    return Label
-  else
-    return Nil
+    @watcher.on_file_deleted("unload") do |filename|
+      unload_widget(filename)
+    end
   end
 end

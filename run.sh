@@ -1,9 +1,5 @@
-# todo: move voidcsfml inside this directory
-export LIBRARY_PATH=/home/marrow16180/Programming/Crystal/crsfml/voidcsfml
+#!/bin/bash
+export LIBRARY_PATH=$(pwd)/lib/voidcsfml
 export LD_LIBRARY_PATH="$LIBRARY_PATH"
 
-# debug
 crystal main.cr
-
-# release
-# crystal main.cr --define release

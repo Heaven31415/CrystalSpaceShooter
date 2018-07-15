@@ -17,7 +17,7 @@ class Properties(T)
     @properties[key] = value
   end
 
-  def [](key : String, t : T.class) forall T
+  def [](key : String, t : T.class) : T forall T
     unless @properties.has_key? key
       raise "Unable to find property: `#{key}`"
     end

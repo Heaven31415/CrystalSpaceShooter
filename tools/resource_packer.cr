@@ -52,10 +52,10 @@ class PackedResources(T)
     end
   end
 
-  def unpack(key : K.class) : Hash(K, T)
+  def unpack(key : K.class) : Hash(K, T) forall K
     resources = Hash(K, T).new
     @resources.each do |r|
-      key = T.parse? r[:name]
+      key = K.parse? r[:name]
       if key
         resources[key] = T.from_memory(r[:bytes])
       end

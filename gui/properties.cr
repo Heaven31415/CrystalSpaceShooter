@@ -1,13 +1,14 @@
 require "crsfml/graphics"
 require "openssl/sha1.cr"
 
-alias Property = Float32 | SF::Color | SF::Vector2f | String | Int32
+alias Property = Bool | Float32 | SF::Color | SF::Vector2f | String | Int32
 
 class Properties(T)
   LINE_FORMAT_REGEX = /^([a-zA-Z0-9]+)\s?=\s?(.+)$/
   COLOR_REGEX = /^rgba\((.{1,3})\,\s(.{1,3})\,\s(.{1,3})\,\s(.{1,3})\)$/
   VECTOR_REGEX = /^xy\((.+)\,\s(.+)\)$/
   STRING_REGEX = /^\"(.*)\"$/
+  BOOL_REGEX = /^(false|true)$/
 
   def initialize
     @properties = {} of String => Property
@@ -122,6 +123,12 @@ class Properties(T)
       elsif matches = property_value.match(STRING_REGEX) # "string"
         str = matches[1]
         style[property_name] = str
+      elsif matches = property_value.match(BOOL_REGEX) # bool
+        if matches[1] == "false"
+          style[property_name] = false
+        else
+          style[property_name] = true
+        end
       elsif value = property_value.to_i32? # int32
         style[property_name] = value
       elsif value = property_value.to_f32? # float32

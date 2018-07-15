@@ -8,6 +8,7 @@ abstract class State
     Title
   end
 
+  abstract def initialize
   abstract def draw(target : SF::RenderTarget)
   abstract def handle_input(event : SF::Event)
   abstract def update(dt : SF::Time)

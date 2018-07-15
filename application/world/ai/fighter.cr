@@ -34,10 +34,10 @@ class Fighter < AI
   end
 
   private def _think(me : Unit, dt : SF::Time)
-    if me.position_bottom > Config.window_size.y / 2.0
+    if me.position_bottom > Window.size.y / 2.0
       @scaling_timer.update(dt)
     else
-      player_position = Game.world.player.position
+      player_position = Player.instance.position
 
       if player_position.x > me.position.x
         me.accelerate(Direction::Right, dt)

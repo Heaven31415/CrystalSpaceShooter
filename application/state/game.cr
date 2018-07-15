@@ -1,16 +1,37 @@
 require "./state.cr"
+require "./manager.cr"
+require "../world/units/*"
 
 class Game < State
+  getter world
+
   def initialize
+    @world = World.new
+
+    player = Player.instance
+    player.position = {Window.size.x * 0.5f32, Window.size.y * 0.75f32}
+    @world.add(player)
+
+    # Enemies Test
+    @world.add(EnemyCarrier.new)
+    @world.add(EnemyFighter.new)
+    @world.add(EnemyInterceptor.new)
   end
 
   def draw(target : SF::RenderTarget)
+    @world.draw(target)
   end
 
   def handle_input(event : SF::Event)
+    case event
+    when SF::Event::Closed
+      Window.close
+    end
+    Player.instance.handle_input(event)
   end
 
   def update(dt : SF::Time)
+    @world.update(dt)
   end
 
   def isolate_drawing : Bool

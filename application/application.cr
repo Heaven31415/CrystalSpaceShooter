@@ -1,7 +1,8 @@
 require "./config.cr"
 require "./resources.cr"
 require "./window.cr"
-require "./state/state_manager.cr"
+require "./state/cache.cr"
+require "./state/manager.cr"
 
 class Application
   def initialize
@@ -10,13 +11,29 @@ class Application
     Resources.load_fonts
     Resources.load_sounds
     Resources.load_textures
+    # Audio.load
+    Cache.load
+    Manager.load
 
-    @manager = StateManager.new
-    @manager.push(State::Type::Game)
+    @time_per_frame = SF.seconds(1.0 / Config.get("Fps", Float32))
+    @clock = SF::Clock.new
+    @dt = SF::Time.new
   end
 
   def run
-    @manager.run
+    @clock.restart
+
+    while Window.open? && !Manager.empty?
+      @dt += @clock.restart
+      while @dt >= @time_per_frame
+        while event = Window.poll_event
+          Manager.handle_input(event)
+        end
+        Manager.update(@time_per_frame)
+        Manager.draw(Window.instance)
+        @dt -= @time_per_frame
+      end 
+    end
   end
 end
 

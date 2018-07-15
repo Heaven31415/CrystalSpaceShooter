@@ -1,4 +1,6 @@
 require "crsfml/graphics"
+require "../../state/cache.cr"
+require "../../state/game.cr"
 
 struct UnitDefinition
   property type : Unit::Type
@@ -175,6 +177,10 @@ class Unit < SF::Sprite
 
   def <=(other : self)
     @type.value <= other.type.value
+  end
+
+  def world
+    Cache.get(State::Type::Game).as(Game).world
   end
 
   def to_s(io)

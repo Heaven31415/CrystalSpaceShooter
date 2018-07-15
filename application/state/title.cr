@@ -1,4 +1,5 @@
 require "./state.cr"
+require "./manager.cr"
 
 class Title < State
   def initialize

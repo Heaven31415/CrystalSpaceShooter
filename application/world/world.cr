@@ -1,18 +1,14 @@
-require "../common/time_callback.cr"
-require "../units/*"
+require "./units/background.cr"
+
+# unit needs access to: Manager, World, Player
+# 1. Manager.push(State::Type::Menu)
+# 2. Cache.get(State::Type::Game).world
+# 3. Player.instance
 
 class World
   def initialize
-    @player = Player.new
-    @player.position = {Config.window_size.x * 0.5, Config.window_size.y * 0.75}
-
     @units = [] of Unit
-    @units.push(@player)
-    @units.push(Background.new)
-  end
-
-  def player
-    @player
+    add(Background.new)
   end
 
   def add(unit : Unit)
@@ -27,11 +23,7 @@ class World
     @units.select { |u| predicate.call(u) }
   end
 
-  def handle_input(event : SF::Event)
-    @player.handle_input(event)
-  end
-
-  def render(target : SF::RenderTarget)
+  def draw(target : SF::RenderTarget)
     @units.sort!
     @units.each { |u| target.draw(u) }
   end
@@ -41,7 +33,7 @@ class World
       if u.alive
         case u.type
         when Unit::Type::Enemy, Unit::Type::EnemyWeapon
-          if u.position_top >= Config.window_size.y
+          if u.position_top >= Window.size.y
             u.kill
           end
         when Unit::Type::PlayerWeapon

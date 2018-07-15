@@ -1,11 +1,21 @@
 require "./unit.cr"
 require "./weapons.cr"
-require "../common/time_callback.cr"
+require "../world.cr"
+require "../../../common/time_callback.cr"
 
 class Player < Unit
   enum WeaponMode
     Missile,
     Beam
+  end
+
+  @@instance : Player?
+  def self.instance
+    if instance = @@instance
+      instance
+    else
+      @@instance = Player.new
+    end
   end
 
   def initialize
@@ -14,7 +24,7 @@ class Player < Unit
     definition.acceleration = SF.vector2f(200.0, 250.0)
     definition.max_velocity = SF.vector2f(300.0, 150.0)
     definition.max_health = 25
-    definition.texture = Resources.textures.get("player.png")
+    definition.texture = Resources.get(Textures::Player)
     super(definition)
 
     @weapon_mode = WeaponMode::Missile
@@ -55,10 +65,10 @@ class Player < Unit
     if position_left < 0.0
       @velocity.x = @velocity.x.abs * 0.5
       move(@max_velocity.x * dt.as_seconds, 0)
-    elsif position_right > Config.window_size.x
+    elsif position_right > Window.size.x
       @velocity.x = -@velocity.x.abs * 0.5
       move(-@max_velocity.x * dt.as_seconds, 0)
-    elsif position_bottom > Config.window_size.y
+    elsif position_bottom > Window.size.y
       @velocity.y = -@velocity.y.abs * 0.5
       move(0, -@max_velocity.y * dt.as_seconds)
     end
@@ -75,7 +85,7 @@ class Player < Unit
       @velocity.y += @acceleration.y * dt.as_seconds
     end
 
-    if position_top < Config.window_size.y / 2.0
+    if position_top < Window.size.y / 2.0
       @velocity.y += 5.1 * @acceleration.y * dt.as_seconds
     end
 
@@ -101,7 +111,7 @@ class Player < Unit
         laser.scale = {1.25f32, 1.0f32}
 
         add_child(laser)
-        Game.world.add(laser)
+        world.add(laser)
         #Game.audio.play("laser.wav")
       end
     when WeaponMode::Beam
@@ -114,8 +124,8 @@ class Player < Unit
         add_child(left_laser)
         add_child(right_laser)
 
-        Game.world.add(left_laser)
-        Game.world.add(right_laser)
+        world.add(left_laser)
+        world.add(right_laser)
         #Game.audio.play("laser.wav")
       end
     end

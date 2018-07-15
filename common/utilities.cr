@@ -17,6 +17,8 @@ module Math
   end
 end
 
+# todo: move those methods inside DirectoryWatcher
+
 alias FileHash = StaticArray(UInt8, 20)
 
 def compute_filehash(filename : String) : FileHash
@@ -159,3 +161,32 @@ class DirectoryWatcher
     end
   end
 end
+
+module Tools
+  extend self
+
+  def find_filenames(directory_path : String, &block : String -> Bool) : Array(String)
+    unless Dir.exists? directory_path
+      raise "Unable to find directory at: `#{directory_path}`"
+    end
+
+    filenames = [] of String
+
+    Dir.each_child(directory_path) do |name|
+      path = File.join(directory_path, name)
+      if Dir.exists? path
+        filenames += find_filenames(path, &block)
+      else
+        filenames << path if block.call(path)
+      end
+    end
+
+    filenames
+  end
+end
+
+# filenames = Tools.find_filenames("resources/styles") do |filename|
+#   File.extname(filename) == ".button"
+# end
+
+# puts filenames

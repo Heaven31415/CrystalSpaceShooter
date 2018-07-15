@@ -1,4 +1,5 @@
-require "../common/utilities.cr"
+require "../../../common/utilities.cr"
+require "../world.cr"
 require "./unit.cr"
 require "./weapons.cr"
 
@@ -17,15 +18,15 @@ class Meteor < Unit
     definition.max_velocity = SF.vector2f(200.0, 200.0)
     case @meteor_type
     when Type::Big
-      definition.texture = Resources.textures.get("meteorBig" + Random.rand(1..4).to_s + ".png")
+      definition.texture = Resources.get(Textures.new(Random.rand(7..10)))
     when Type::Medium
-      definition.texture = Resources.textures.get("meteorMed" + Random.rand(1..2).to_s + ".png")
+      definition.texture = Resources.get(Textures.new(Random.rand(11..12)))
     when Type::Small
-      definition.texture = Resources.textures.get("meteorSmall" + Random.rand(1..2).to_s + ".png")
+      definition.texture = Resources.get(Textures.new(Random.rand(13..14)))
     when Type::Tiny
-      definition.texture = Resources.textures.get("meteorTiny" + Random.rand(1..2).to_s + ".png")
-    else # todo: think whether it's a right way to do it
-      raise "Invalid Meteor::Type enum value: #{meteor_type}"
+      definition.texture = Resources.get(Textures.new(Random.rand(15..16)))
+    else
+      raise "Invalid Meteor::Type value: `#{meteor_type}`"
     end
     super(definition)
   end
@@ -61,7 +62,7 @@ class Meteor < Unit
     child_b.position = position
     child_b.velocity = SF.vector2f(velocity_b[:x], velocity_b[:y])
 
-    Game.world.add(child_a)
-    Game.world.add(child_b)
+    world.add(child_a)
+    world.add(child_b)
   end
 end

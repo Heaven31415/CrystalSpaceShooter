@@ -1,12 +1,12 @@
 require "./unit.cr"
 
 class Pickup < Unit
-  def initialize(max_velocity : SF::Vector2f, texture_name : String)
+  def initialize(max_velocity : SF::Vector2f, texture : SF::Texture)
     definition = UnitDefinition.new
     definition.type = Unit::Type::EnemyWeapon
     definition.acceleration = SF.vector2f(0.0, 50.0)
     definition.max_velocity = max_velocity
-    definition.texture = Resources.textures.get(texture_name)
+    definition.texture = texture
     super(definition)
   end
 
@@ -18,7 +18,7 @@ end
 
 class PickupHealth < Pickup
   def initialize
-    super(SF.vector2f(0.0, 100.0), "pickupHealth.png")
+    super(SF.vector2f(0.0, 100.0), Resources.get(Textures::PickupHealth))
   end
 
   def on_collision(other)
@@ -31,14 +31,14 @@ end
 
 class PickupKnock < Pickup
   def initialize
-    super(SF.vector2f(0.0, 200.0), "pickupKnock.png")
+    super(SF.vector2f(0.0, 200.0), Resources.get(Textures::PickupKnock))
   end
 
   def on_collision(other)
     if other.type == Unit::Type::Player
-      enemies = Game.world.get(->(unit : Unit) { unit.type == Unit::Type::Enemy })
+      enemies = world.get(->(unit : Unit) { unit.type == Unit::Type::Enemy })
       enemies.each do |enemy|
-        enemy.velocity = -enemy.velocity # fix: it doesn't knock
+        enemy.velocity = -enemy.velocity # todo: fix it, because it doesn't knock
       end
       kill
     end

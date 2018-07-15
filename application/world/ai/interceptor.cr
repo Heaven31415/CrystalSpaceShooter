@@ -21,7 +21,7 @@ class Interceptor < AI
   end
 
   private def _think(me : Unit, dt : SF::Time)
-    player_position = Game.world.player.position
+    player_position = Player.instance.position
 
     if player_position.x > me.position.x
       me.accelerate(Direction::Right, dt)
@@ -31,7 +31,7 @@ class Interceptor < AI
 
     if me.position_top < 0.0
       me.accelerate(Direction::Down, dt)
-    elsif me.position_bottom > Config.window_size.y / 5.0
+    elsif me.position_bottom > Window.size.y / 5.0
       me.accelerate(Direction::Up, dt)
     end
 

@@ -52,11 +52,11 @@ class Window
     end
   end
 
-  def self.close
+  def self.size : SF::Vector2u
     if window = @@window
-      window.close
+      window.size
     else
-      raise "Unable to call #{self}.close on uninitialized #{self}"
+      raise "Unable to call #{self}.size on uninitialized #{self}"
     end
   end
 
@@ -65,6 +65,14 @@ class Window
       window.open?
     else
       raise "Unable to call #{self}.open? on uninitialized #{self}"
+    end
+  end
+
+  def self.close
+    if window = @@window
+      window.close
+    else
+      raise "Unable to call #{self}.close on uninitialized #{self}"
     end
   end
 

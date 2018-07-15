@@ -1,4 +1,4 @@
-require "weak_ref.cr"
+require "weak_ref"
 
 abstract class AI
   abstract def initialize(unit : Unit)

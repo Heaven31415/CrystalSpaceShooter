@@ -9,7 +9,7 @@ class EnemyFighter < Unit
     definition.type = Unit::Type::Enemy
     definition.acceleration = SF.vector2f(150.0, 200.0)
     definition.max_velocity = SF.vector2f(100.0, 200.0)
-    definition.texture = Resources.textures.get("enemyFighter.png")
+    definition.texture = Resources.get(Textures::EnemyFighter)
     super(definition)
 
     @ai = Fighter.new(self)
@@ -32,7 +32,7 @@ class EnemyFighter < Unit
       laser.position = self.position
       laser.set_scale(self.scale.x * 0.8f32, self.scale.y * 0.8f32)
       add_child(laser)
-      Game.world.add(laser)
+      world.add(laser)
     end
   end
 end
@@ -46,7 +46,7 @@ class EnemyCarrier < Unit
     definition.acceleration = SF.vector2f(25.0, 25.0)
     definition.max_velocity = SF.vector2f(50.0, 50.0)
     definition.max_health = 25
-    definition.texture = Resources.textures.get("enemyCarrier.png")
+    definition.texture = Resources.get(Textures::EnemyCarrier)
     super(definition)
 
     @ai = Carrier.new(self)
@@ -73,7 +73,7 @@ class EnemyInterceptor < Unit
     definition.type = Unit::Type::Enemy
     definition.acceleration = SF.vector2f(100.0, 100.0)
     definition.max_velocity = SF.vector2f(200.0, 200.0)
-    definition.texture = Resources.textures.get("enemyInterceptor.png")
+    definition.texture = Resources.get(Textures::EnemyInterceptor)
     super(definition)
 
     @ai = Interceptor.new(self)
@@ -97,7 +97,7 @@ class EnemyInterceptor < Unit
       laser.position = self.position
       laser.set_scale(0.15, 0.15)
       add_child(laser)
-      Game.world.add(laser)
+      world.add(laser)
     end
   end
 end

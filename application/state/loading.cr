@@ -1,4 +1,5 @@
 require "./state.cr"
+require "./manager.cr"
 
 class Loading < State
   def initialize

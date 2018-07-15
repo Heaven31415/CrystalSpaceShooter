@@ -1,7 +1,7 @@
 require "crsfml/graphics"
 require "openssl/sha1.cr"
 
-alias Property = Bool | Float32 | SF::Color | SF::Vector2f | String | Int32
+alias Property = Bool | Float32 | SF::Color | SF::Vector2f | SF::Vector2i | String | Int32
 
 class Properties(T)
   LINE_FORMAT_REGEX = /^([a-zA-Z0-9]+)\s?=\s?(.+)$/
@@ -108,17 +108,23 @@ class Properties(T)
           msg += "in file `#{filename}` at line #{line[:number]}"
           raise msg
         end
-      elsif matches = property_value.match(VECTOR_REGEX) # xy(float, float)
-        x = matches[1].to_f32?
-        y = matches[2].to_f32?
-        if x && y
-          style[property_name] = SF::Vector2f.new(x, y)
-        elsif !x && !y
-          raise "Invalid vector2f `x` and `y` value in file `#{filename}` at line #{line[:number]}"
-        elsif !x
-          raise "Invalid vector2f `x` value in file `#{filename}` at line #{line[:number]}"
-        elsif !y
-          raise "Invalid vector2f `y` value in file `#{filename}` at line #{line[:number]}"
+      elsif matches = property_value.match(VECTOR_REGEX) # xy(float32 | int32, float32 | int32)
+        x_i32 = matches[1].to_i32?
+        y_i32 = matches[2].to_i32?
+
+        x_f32 = matches[1].to_f32?
+        y_f32 = matches[2].to_f32?
+
+        if x_i32 && y_i32
+          style[property_name] = SF::Vector2i.new(x_i32, y_i32)
+        elsif x_f32 && y_f32
+          style[property_name] = SF::Vector2f.new(x_f32, y_f32)
+        elsif (!x_i32 && !x_f32) && (!y_i32 && !y_f32)
+          raise "Invalid vector2 `x` and `y` value in file `#{filename}` at line #{line[:number]}"
+        elsif !x_i32 && !x_f32
+          raise "Invalid vector2 `x` value in file `#{filename}` at line #{line[:number]}"
+        elsif !y_i32 && !y_f32
+          raise "Invalid vector2 `y` value in file `#{filename}` at line #{line[:number]}"
         end
       elsif matches = property_value.match(STRING_REGEX) # "string"
         str = matches[1]

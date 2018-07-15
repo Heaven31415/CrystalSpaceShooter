@@ -6,7 +6,7 @@ require "./world.cr"
 
 class Game
   @@TimePerFrame = SF.seconds(1.0 / Config.fps)
-  @@audio = SoundSystem.new(Resources.sounds)
+  @@audio = SoundSystem.new
   @@world = World.new
   @@window = SF::RenderWindow.new(SF::VideoMode.new(Config.window_size.x, Config.window_size.y), Config.window_name)
 

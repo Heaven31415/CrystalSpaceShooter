@@ -1,11 +1,12 @@
 require "crsfml/graphics"
 require "openssl/sha1.cr"
 
-alias Property = Bool | Float32 | SF::Color | SF::Vector2f | SF::Vector2i | String | Int32
+alias Property = Bool | Float32 | SF::Color | SF::FloatRect | SF::IntRect | SF::Vector2f | SF::Vector2i | String | Int32
 
 class Properties(T)
   LINE_FORMAT_REGEX = /^([a-zA-Z0-9]+)\s?=\s?(.+)$/
-  COLOR_REGEX = /^rgba\((.{1,3})\,\s(.{1,3})\,\s(.{1,3})\,\s(.{1,3})\)$/
+  COLOR_REGEX = /^rgba\((.{1,3})\,\s?(.{1,3})\,\s?(.{1,3})\,\s?(.{1,3})\)$/
+  RECT_REGEX = /^xywh\((.+)\,\s?(.+)\,\s?(.+)\,\s?(.+)\)$/
   VECTOR_REGEX = /^xy\((.+)\,\s(.+)\)$/
   STRING_REGEX = /^\"(.*)\"$/
   BOOL_REGEX = /^(false|true)$/
@@ -81,7 +82,7 @@ class Properties(T)
     end
     
     lines.shift # remove header line
-    style = Properties(T).new
+    properties = Properties(T).new
 
     lines.each do |line|
       matches = line[:content].match(LINE_FORMAT_REGEX)
@@ -92,13 +93,13 @@ class Properties(T)
       property_name = matches[1]
       property_value = matches[2]
 
-      if matches = property_value.match(COLOR_REGEX) # rgba(number, number, number, number)
+      if matches = property_value.match(COLOR_REGEX) # rgba(u8, u8, u8, u8)
         r = matches[1].to_u8?
         g = matches[2].to_u8?
         b = matches[3].to_u8?
         a = matches[4].to_u8?
         if r && g && b && a
-          style[property_name] = SF::Color.new(r, g, b, a)
+          properties[property_name] = SF::Color.new(r, g, b, a)
         else
           msg = "Invalid color value "
           msg += "`r` " if !r
@@ -108,7 +109,31 @@ class Properties(T)
           msg += "in file `#{filename}` at line #{line[:number]}"
           raise msg
         end
-      elsif matches = property_value.match(VECTOR_REGEX) # xy(float32 | int32, float32 | int32)
+      elsif matches = property_value.match(RECT_REGEX) # xywh(f32 | i32, f32 | i32, f32 | i32, f32 | i32)
+        x_i32 = matches[1].to_i32?
+        y_i32 = matches[2].to_i32?
+        w_i32 = matches[3].to_i32?
+        h_i32 = matches[4].to_i32?
+
+        x_f32 = matches[1].to_f32?
+        y_f32 = matches[2].to_f32?
+        w_f32 = matches[3].to_f32?
+        h_f32 = matches[4].to_f32?
+
+        if x_i32 && y_i32 && w_i32 && h_i32
+          properties[property_name] = SF::IntRect.new(SF::Vector2i.new(x_i32, y_i32), SF::Vector2i.new(w_i32, h_i32))
+        elsif x_f32 && y_f32 && w_f32 && h_f32
+          properties[property_name] = SF::FloatRect.new(SF::Vector2f.new(x_f32, y_f32), SF::Vector2f.new(w_f32, h_f32))
+        else
+          msg = "Invalid rect value "
+          msg += "`x` " if !x_i32 && !x_f32
+          msg += "`y` " if !y_i32 && !y_f32
+          msg += "`width` " if !w_i32 && !w_f32
+          msg += "`height` " if !h_i32 && !h_f32
+          msg += "in file `#{filename}` at line #{line[:number]}"
+          raise msg
+        end
+      elsif matches = property_value.match(VECTOR_REGEX) # xy(f32 | i32, f32 | i32)
         x_i32 = matches[1].to_i32?
         y_i32 = matches[2].to_i32?
 
@@ -116,9 +141,9 @@ class Properties(T)
         y_f32 = matches[2].to_f32?
 
         if x_i32 && y_i32
-          style[property_name] = SF::Vector2i.new(x_i32, y_i32)
+          properties[property_name] = SF::Vector2i.new(x_i32, y_i32)
         elsif x_f32 && y_f32
-          style[property_name] = SF::Vector2f.new(x_f32, y_f32)
+          properties[property_name] = SF::Vector2f.new(x_f32, y_f32)
         elsif (!x_i32 && !x_f32) && (!y_i32 && !y_f32)
           raise "Invalid vector2 `x` and `y` value in file `#{filename}` at line #{line[:number]}"
         elsif !x_i32 && !x_f32
@@ -128,22 +153,22 @@ class Properties(T)
         end
       elsif matches = property_value.match(STRING_REGEX) # "string"
         str = matches[1]
-        style[property_name] = str
+        properties[property_name] = str
       elsif matches = property_value.match(BOOL_REGEX) # bool
         if matches[1] == "false"
-          style[property_name] = false
+          properties[property_name] = false
         else
-          style[property_name] = true
+          properties[property_name] = true
         end
       elsif value = property_value.to_i32? # int32
-        style[property_name] = value
+        properties[property_name] = value
       elsif value = property_value.to_f32? # float32
-        style[property_name] = value
+        properties[property_name] = value
       else
         raise "Invalid property value: `#{property_value}` in file `#{filename}` at line #{line[:number]}"
       end
     end
-    style
+    properties
   end
 
   def to_file(filename : String, force_overwrite : Bool = false)

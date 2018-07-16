@@ -26,6 +26,10 @@ class Game < State
     case event
     when SF::Event::Closed
       App.window.close
+    when SF::Event::KeyPressed
+      if event.code == SF::Keyboard::M
+        App.manager.push(State::Type::Menu)
+      end
     end
     App.player.handle_input(event)
   end

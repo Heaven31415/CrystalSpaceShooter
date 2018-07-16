@@ -48,8 +48,14 @@ class Manager
   private def render(target : SF::RenderTarget)
     target.clear
 
-    isolation_index = @states.reverse.index do |state|
-      state.isolate_drawing == true
+    isolation_index = nil
+    i = @states.size - 1
+    while i >= 0
+      if @states[i].isolate_drawing == true
+        isolation_index = i
+        break
+      end
+      i -= 1
     end
 
     if isolation_index
@@ -68,8 +74,14 @@ class Manager
   end
 
   private def handle_input(event : SF::Event)
-    isolation_index = @states.reverse.index do |state|
-      state.isolate_input == true
+    isolation_index = nil
+    i = @states.size - 1
+    while i >= 0
+      if @states[i].isolate_input == true
+        isolation_index = i
+        break
+      end
+      i -= 1
     end
 
     if isolation_index
@@ -86,8 +98,14 @@ class Manager
   end
 
   private def update(dt : SF::Time)
-    isolation_index = @states.reverse.index do |state|
-      state.isolate_update == true
+    isolation_index = nil
+    i = @states.size - 1
+    while i >= 0
+      if @states[i].isolate_update == true
+        isolation_index = i
+        break
+      end
+      i -= 1
     end
 
     if isolation_index

@@ -13,8 +13,10 @@ abstract class State
   abstract def handle_input(event : SF::Event)
   abstract def update(dt : SF::Time)
 
-  # If true, only this state will be drawn
+  # If true, only this state and higher states will be drawn
   abstract def isolate_drawing : Bool
-  # If true, only this state will handle input
+  # If true, only this state and higher states will handle input
   abstract def isolate_input : Bool
+  # If true, only this state and higher states will be updated
+  abstract def isolate_update : Bool
 end

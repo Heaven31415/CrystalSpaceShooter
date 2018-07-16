@@ -25,10 +25,13 @@ class App
     Cache.instance
   end
 
+  def self.manager : Manager
+    Manager.instance
+  end
+
   def initialize
     Resources.instance.load_all
     # Audio.load
-    Manager.load
 
     @time_per_frame = SF.seconds(1.0 / App.config["Fps", Float32])
     @clock = SF::Clock.new
@@ -37,17 +40,7 @@ class App
 
   def run
     @clock.restart
-
-    while App.window.open? && !Manager.empty?
-      @dt += @clock.restart
-      while @dt >= @time_per_frame
-        while event = App.window.poll_event
-          Manager.handle_input(event)
-        end
-        Manager.update(@time_per_frame)
-        Manager.draw(App.window)
-        @dt -= @time_per_frame
-      end 
-    end
+    Manager.instance.push(State::Type::Game)
+    Manager.instance.run
   end
 end

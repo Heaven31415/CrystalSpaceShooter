@@ -21,4 +21,8 @@ class Title < State
   def isolate_input : Bool
     true
   end
+
+  def isolate_update : Bool
+    true
+  end
 end

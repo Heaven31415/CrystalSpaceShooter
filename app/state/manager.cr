@@ -1,62 +1,105 @@
 require "./cache.cr"
 
 class Manager
-  @@states : Array(State)? = nil
+  @@instance : Manager?
 
-  def self.load
-    @@states = Array(State).new
-    if states = @@states
-      states.push(App.cache[State::Type::Game])
-    end
+  def self.create : Manager
+    manager = Manager.new
+    manager
   end
 
-  def self.empty? : Bool
-    if states = @@states
-      states.size == 0
-    else
-      raise "Unable to call #{self}.empty? on uninitialized #{self}"
-    end
+  def self.instance : Manager
+    @@instance ||= create
   end
 
-  def self.push(state : State::Type)
-    if states = @@states
-      states.push(App.cache[state])
-    else
-      raise "Unable to call #{self}.push on uninitialized #{self}"
-    end
+  def initialize
+    @states = [] of State
+    @time_per_frame = SF.seconds(1.0 / App.config["Fps", Float32])
+    @clock = SF::Clock.new
+    @dt = SF::Time.new
   end
 
-  def self.draw(target : SF::RenderTarget)
-    if states = @@states
-      target.clear
-      
-      states.each do |state|
-        state.draw(target)
+  def push(state : State::Type)
+    @states.push(App.cache[state])
+  end
+
+  def pop
+    @states.pop
+  end
+
+  def run
+    @clock.restart
+
+    while App.window.open? && @states.size != 0
+      @dt += @clock.restart
+      while @dt >= @time_per_frame
+        while event = App.window.poll_event
+          handle_input(event)
+        end
+
+        update(@time_per_frame)
+        render(App.window)
+
+        @dt -= @time_per_frame
       end
-
-      target.display
-    else
-      raise "Unable to call #{self}.draw on uninitialized #{self}"
     end
   end
 
-  def self.handle_input(event : SF::Event)
-    if states = @@states
-      states.each do |state|
-        state.handle_input(event)
+  private def render(target : SF::RenderTarget)
+    target.clear
+
+    isolation_index = @states.reverse.index do |state|
+      state.isolate_drawing == true
+    end
+
+    if isolation_index
+      i = isolation_index
+      while i < @states.size
+        @states[i].draw(target)
+        i += 1
       end
     else
-      raise "Unable to call #{self}.handle_input on uninitialized #{self}"
+      @states.each do |state|
+        state.draw(target)  
+      end
+    end
+
+    target.display
+  end
+
+  private def handle_input(event : SF::Event)
+    isolation_index = @states.reverse.index do |state|
+      state.isolate_input == true
+    end
+
+    if isolation_index
+      i = isolation_index
+      while i < @states.size
+        @states[i].handle_input(event)
+        i += 1
+      end
+    else
+      @states.each do |state|
+        state.handle_input(event)  
+      end
     end
   end
 
-  def self.update(dt : SF::Time)
-    if states = @@states
-      states.each do |state|
+  private def update(dt : SF::Time)
+    isolation_index = @states.reverse.index do |state|
+      state.isolate_update == true
+    end
+
+    if isolation_index
+      i = isolation_index
+      while i < @states.size
+        @states[i].update(dt)
+        i += 1
+      end
+    else
+      @states.each do |state|
         state.update(dt)
       end
-    else
-      raise "Unable to call #{self}.update on uninitialized #{self}"
     end
   end
 end

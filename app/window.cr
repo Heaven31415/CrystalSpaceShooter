@@ -1,7 +1,7 @@
 require "crsfml/graphics"
 
 class Window
-  @@window : SF::RenderWindow?
+  @@instance : SF::RenderWindow?
 
   def self.create : SF::RenderWindow
     width = Config.get("WindowWidth", Int32)
@@ -23,6 +23,6 @@ class Window
   end
 
   def self.instance : SF::RenderWindow
-    @@window ||= create
+    @@instance ||= create
   end
 end

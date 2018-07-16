@@ -9,7 +9,7 @@ class Game < State
     @world = World.new
 
     player = Player.instance
-    player.position = {Window.size.x * 0.5f32, Window.size.y * 0.75f32}
+    player.position = {App.window.size.x * 0.5f32, App.window.size.y * 0.75f32}
     @world.add(player)
 
     # Enemies Test
@@ -25,7 +25,7 @@ class Game < State
   def handle_input(event : SF::Event)
     case event
     when SF::Event::Closed
-      Window.close
+      App.window.close
     end
     Player.instance.handle_input(event)
   end

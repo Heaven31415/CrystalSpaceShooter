@@ -33,7 +33,7 @@ class World
       if u.alive
         case u.type
         when Unit::Type::Enemy, Unit::Type::EnemyWeapon
-          if u.position_top >= Window.size.y
+          if u.position_top >= App.window.size.y
             u.kill
           end
         when Unit::Type::PlayerWeapon

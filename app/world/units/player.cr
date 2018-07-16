@@ -65,10 +65,10 @@ class Player < Unit
     if position_left < 0.0
       @velocity.x = @velocity.x.abs * 0.5
       move(@max_velocity.x * dt.as_seconds, 0)
-    elsif position_right > Window.size.x
+    elsif position_right > App.window.size.x
       @velocity.x = -@velocity.x.abs * 0.5
       move(-@max_velocity.x * dt.as_seconds, 0)
-    elsif position_bottom > Window.size.y
+    elsif position_bottom > App.window.size.y
       @velocity.y = -@velocity.y.abs * 0.5
       move(0, -@max_velocity.y * dt.as_seconds)
     end
@@ -85,7 +85,7 @@ class Player < Unit
       @velocity.y += @acceleration.y * dt.as_seconds
     end
 
-    if position_top < Window.size.y / 2.0
+    if position_top < App.window.size.y / 2.0
       @velocity.y += 5.1 * @acceleration.y * dt.as_seconds
     end
 

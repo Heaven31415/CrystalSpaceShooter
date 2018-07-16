@@ -22,7 +22,7 @@ class Carrier < AI
 
     if me.position_top < 0.0
       me.accelerate(Direction::Down, dt)
-    elsif me.position_bottom > Window.size.y / 5.0
+    elsif me.position_bottom > App.window.size.y / 5.0
       me.accelerate(Direction::Up, dt)
     end
   end

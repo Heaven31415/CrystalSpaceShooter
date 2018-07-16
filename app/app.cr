@@ -5,9 +5,13 @@ require "./state/cache.cr"
 require "./state/manager.cr"
 
 class App
+  def self.window : SF::RenderWindow
+    Window.instance
+  end
+
   def initialize
     Config.load("app.config")
-    Window.load
+    # Window.load
     Resources.load_fonts
     Resources.load_sounds
     Resources.load_textures
@@ -23,14 +27,14 @@ class App
   def run
     @clock.restart
 
-    while Window.open? && !Manager.empty?
+    while App.window.open? && !Manager.empty?
       @dt += @clock.restart
       while @dt >= @time_per_frame
-        while event = Window.poll_event
+        while event = App.window.poll_event
           Manager.handle_input(event)
         end
         Manager.update(@time_per_frame)
-        Manager.draw(Window.instance)
+        Manager.draw(App.window)
         @dt -= @time_per_frame
       end 
     end

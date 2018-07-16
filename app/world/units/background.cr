@@ -8,7 +8,7 @@ class Background < Unit
     definition.max_velocity = Config.get("BackgroundVelocity", SF::Vector2f)
     definition.texture = Resources.get(Textures::Background)
     definition.texture.repeated = true
-    definition.texture_rect = SF.int_rect(0, 0, Window.size.x, Window.size.y)
+    definition.texture_rect = SF.int_rect(0, 0, App.window.size.x, App.window.size.y)
 
     super(definition)
 
@@ -22,8 +22,8 @@ class Background < Unit
   end
 
   def update(dt : SF::Time)
-    move(0.0, -2 * Window.size.y) if position.y > Window.size.y
-    @extra.move(0.0, -2 * Window.size.y) if @extra.position.y > Window.size.y
+    move(0.0, -2 * App.window.size.y) if position.y > App.window.size.y
+    @extra.move(0.0, -2 * App.window.size.y) if @extra.position.y > App.window.size.y
     @extra.update(dt)
     super
   end

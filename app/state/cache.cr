@@ -5,23 +5,40 @@ require "./menu.cr"
 require "./title.cr"
 
 class Cache
-  @@states : Hash(State::Type, State)? = nil
+  @@instance : Cache?
 
-  def self.load
-    @@states = Hash(State::Type, State).new
-    if states = @@states
-      states[State::Type::Game] = Game.new
-      states[State::Type::Loading] = Loading.new
-      states[State::Type::Menu] = Menu.new
-      states[State::Type::Title] = Title.new
+  def self.create : Cache
+    cache = Cache.new
+  end
+
+  def self.instance : Cache
+    @@instance ||= create
+  end
+
+  def initialize
+    @states = {} of State::Type => State
+  end
+
+  def [](state : State::Type) : State
+    if @states.has_key? state
+      @states[state]
+    else
+      factory(state)
     end
   end
 
-  def self.get(state : State::Type) : State
-    if states = @@states
-      states[state]
+  private def factory(state : State::Type) : State
+    case state
+    when State::Type::Game
+      @states[state] = Game.new
+    when State::Type::Loading
+      @states[state] = Loading.new
+    when State::Type::Menu
+      @states[state] = Menu.new
+    when State::Type::Title
+      @states[state] = Title.new
     else
-      raise "Unable to call #{self}.get on uninitialized #{self}"
+      raise "Invalid State::Type enum value: #{state}"
     end
-  end 
+  end
 end

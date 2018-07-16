@@ -180,7 +180,7 @@ class Unit < SF::Sprite
   end
 
   def world
-    Cache.get(State::Type::Game).as(Game).world
+    App.cache[State::Type::Game].as(Game).world
   end
 
   def to_s(io)

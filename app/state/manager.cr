@@ -6,7 +6,7 @@ class Manager
   def self.load
     @@states = Array(State).new
     if states = @@states
-      states.push(Cache.get(State::Type::Game))
+      states.push(App.cache[State::Type::Game])
     end
   end
 
@@ -20,7 +20,7 @@ class Manager
 
   def self.push(state : State::Type)
     if states = @@states
-      states.push(Cache.get(state))
+      states.push(App.cache[state])
     else
       raise "Unable to call #{self}.push on uninitialized #{self}"
     end

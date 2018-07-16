@@ -21,10 +21,13 @@ class App
     Player.instance
   end
 
+  def self.cache : Cache
+    Cache.instance
+  end
+
   def initialize
     Resources.instance.load_all
     # Audio.load
-    Cache.load
     Manager.load
 
     @time_per_frame = SF.seconds(1.0 / App.config["Fps", Float32])

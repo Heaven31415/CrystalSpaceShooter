@@ -27,7 +27,7 @@ class Game < State
     when SF::Event::Closed
       App.window.close
     end
-    Player.instance.handle_input(event)
+    App.player.handle_input(event)
   end
 
   def update(dt : SF::Time)

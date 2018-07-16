@@ -17,6 +17,10 @@ class App
     Resources.instance
   end
 
+  def self.player : Player
+    Player.instance
+  end
+
   def initialize
     Resources.instance.load_all
     # Audio.load

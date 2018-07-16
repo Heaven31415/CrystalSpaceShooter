@@ -12,7 +12,7 @@ class Carrier < AI
   end
 
   private def _think(me : Unit, dt : SF::Time)
-    player_position = Player.instance.position
+    player_position = App.player.position
 
     if player_position.x > me.position.x
       me.accelerate(Direction::Right, dt)

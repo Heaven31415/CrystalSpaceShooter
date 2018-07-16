@@ -37,7 +37,7 @@ class Fighter < AI
     if me.position_bottom > App.window.size.y / 2.0
       @scaling_timer.update(dt)
     else
-      player_position = Player.instance.position
+      player_position = App.player.position
 
       if player_position.x > me.position.x
         me.accelerate(Direction::Right, dt)

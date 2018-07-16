@@ -4,18 +4,20 @@ require "../world.cr"
 require "../../../common/time_callback.cr"
 
 class Player < Unit
+  @@instance : Player?
+
+  def self.create : Player
+    player = Player.new
+    player
+  end
+
+  def self.instance : Player
+    @@instance ||= create
+  end
+
   enum WeaponMode
     Missile,
     Beam
-  end
-
-  @@instance : Player?
-  def self.instance
-    if instance = @@instance
-      instance
-    else
-      @@instance = Player.new
-    end
   end
 
   def initialize

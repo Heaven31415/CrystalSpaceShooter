@@ -1,4 +1,4 @@
-require "../units/player.cr"
+require "../app/world/units/player.cr"
 
 class HUD < SF::RectangleShape
   def initialize(size : SF::Vector2 = SF.vector2(200, 25))
@@ -24,8 +24,8 @@ class HUD < SF::RectangleShape
     super
   end
 
-  def update(player : Player)
-    @health_percent = player.health_percent
+  def update
+    @health_percent = App.player.health_percent
     self.size = {@health_percent * @back.size.x / 100.0, @back.size.y}
   end
 end

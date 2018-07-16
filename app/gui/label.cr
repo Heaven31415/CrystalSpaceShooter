@@ -1,11 +1,10 @@
-require "../common/resources.cr"
+require "../resources.cr"
 
 class Label < SF::Text
-  @@font : SF::Font = Resources.fonts.get("calibri.ttf")
   @@minimal_size = 10
 
   def initialize(string : String, character_size : Int, @width : Float32)
-    super(string, @@font, character_size)
+    super(string, App.resources[Fonts::Calibri], character_size)
     while self.character_size > @@minimal_size && global_bounds.width > @width
       self.character_size -= 1
     end

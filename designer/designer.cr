@@ -8,7 +8,7 @@ alias Widget = Button | Label
 
 class Designer
   @@TimePerFrame = SF.seconds(1.0 / Config.fps)
-  @@WidgetDirectory = "resources/styles"
+  @@WidgetDirectory = "resources/widgets"
   @@window = SF::RenderWindow.new(SF::VideoMode.new(Config.window_size.x, 4 * Config.window_size.y / 5), Config.window_name)
 
   @clock = SF::Clock.new
@@ -159,3 +159,6 @@ class Designer
     end
   end
 end
+
+designer = Designer.new
+designer.run

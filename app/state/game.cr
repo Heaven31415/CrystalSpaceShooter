@@ -8,7 +8,7 @@ class Game < State
   def initialize
     @world = World.new
 
-    player = Player.instance
+    player = App.player
     player.position = {App.window.size.x * 0.5f32, App.window.size.y * 0.75f32}
     @world.add(player)
 
@@ -27,7 +27,7 @@ class Game < State
     when SF::Event::Closed
       App.window.close
     when SF::Event::KeyPressed
-      if event.code == SF::Keyboard::M
+      if event.code == SF::Keyboard::Escape
         App.manager.push(State::Type::Menu)
       end
     end

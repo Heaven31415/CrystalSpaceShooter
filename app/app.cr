@@ -44,3 +44,6 @@ class App
     Manager.instance.run
   end
 end
+
+app = App.new
+app.run

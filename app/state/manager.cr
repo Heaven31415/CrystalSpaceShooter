@@ -14,20 +14,35 @@ class Manager
 
   def initialize
     @states = [] of State
+    @requests = [] of State::Type | Nil
     @time_per_frame = SF.seconds(1.0 / App.config["Fps", Float32])
     @clock = SF::Clock.new
     @dt = SF::Time.new
   end
 
   def push(state : State::Type)
-    @states.push(App.cache[state])
+    @requests.push(state)
   end
 
   def pop
-    @states.pop
+    @requests.push(nil)
+  end
+
+  private def process_requests
+    @requests.reverse!
+    while @requests.size != 0
+      request = @requests.pop
+      case request
+      when State::Type
+        @states.push(App.cache[request])
+      when Nil
+        @states.pop
+      end
+    end
   end
 
   def run
+    process_requests
     @clock.restart
 
     while App.window.open? && @states.size != 0
@@ -39,6 +54,7 @@ class Manager
 
         update(@time_per_frame)
         render(App.window)
+        process_requests
 
         @dt -= @time_per_frame
       end

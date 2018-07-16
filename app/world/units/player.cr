@@ -24,7 +24,7 @@ class Player < Unit
     definition.acceleration = SF.vector2f(200.0, 250.0)
     definition.max_velocity = SF.vector2f(300.0, 150.0)
     definition.max_health = 25
-    definition.texture = Resources.get(Textures::Player)
+    definition.texture = App.resources[Textures::Player]
     super(definition)
 
     @weapon_mode = WeaponMode::Missile

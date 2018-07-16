@@ -18,7 +18,7 @@ end
 
 class PickupHealth < Pickup
   def initialize
-    super(SF.vector2f(0.0, 100.0), Resources.get(Textures::PickupHealth))
+    super(SF.vector2f(0.0, 100.0), App.resources[Textures::PickupHealth])
   end
 
   def on_collision(other)
@@ -31,7 +31,7 @@ end
 
 class PickupKnock < Pickup
   def initialize
-    super(SF.vector2f(0.0, 200.0), Resources.get(Textures::PickupKnock))
+    super(SF.vector2f(0.0, 200.0), App.resources[Textures::PickupKnock])
   end
 
   def on_collision(other)

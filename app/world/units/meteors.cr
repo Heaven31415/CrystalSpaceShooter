@@ -18,13 +18,13 @@ class Meteor < Unit
     definition.max_velocity = SF.vector2f(200.0, 200.0)
     case @meteor_type
     when Type::Big
-      definition.texture = Resources.get(Textures.new(Random.rand(7..10)))
+      definition.texture = App.resources[Textures.new(Random.rand(7..10))]
     when Type::Medium
-      definition.texture = Resources.get(Textures.new(Random.rand(11..12)))
+      definition.texture = App.resources[Textures.new(Random.rand(11..12))]
     when Type::Small
-      definition.texture = Resources.get(Textures.new(Random.rand(13..14)))
+      definition.texture = App.resources[Textures.new(Random.rand(13..14))]
     when Type::Tiny
-      definition.texture = Resources.get(Textures.new(Random.rand(15..16)))
+      definition.texture = App.resources[Textures.new(Random.rand(15..16))]
     else
       raise "Invalid Meteor::Type value: `#{meteor_type}`"
     end

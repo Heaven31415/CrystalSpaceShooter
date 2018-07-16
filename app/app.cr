@@ -13,10 +13,12 @@ class App
     Window.instance
   end
 
+  def self.resources : Resources
+    Resources.instance
+  end
+
   def initialize
-    Resources.load_fonts
-    Resources.load_sounds
-    Resources.load_textures
+    Resources.instance.load_all
     # Audio.load
     Cache.load
     Manager.load

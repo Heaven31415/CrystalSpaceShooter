@@ -1,7 +1,4 @@
-require "./game/game_debug.cr"
-game = Game.new
-game.run
+require "./app/app.cr"
 
-# require "./designer/designer.cr"
-# designer = Designer.new
-# designer.run
+app = App.new
+app.run

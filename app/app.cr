@@ -4,9 +4,9 @@ require "./window.cr"
 require "./state/cache.cr"
 require "./state/manager.cr"
 
-class Application
+class App
   def initialize
-    Config.load("application.config")
+    Config.load("app.config")
     Window.load
     Resources.load_fonts
     Resources.load_sounds
@@ -36,6 +36,3 @@ class Application
     end
   end
 end
-
-application = Application.new
-application.run

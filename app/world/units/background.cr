@@ -5,7 +5,7 @@ class Background < Unit
   def initialize
     definition = UnitDefinition.new
     definition.type = Unit::Type::Background
-    definition.max_velocity = Config.get("BackgroundVelocity", SF::Vector2f)
+    definition.max_velocity = App.config["BackgroundVelocity", SF::Vector2f]
     definition.texture = Resources.get(Textures::Background)
     definition.texture.repeated = true
     definition.texture_rect = SF.int_rect(0, 0, App.window.size.x, App.window.size.y)
@@ -14,11 +14,11 @@ class Background < Unit
 
     @extra = Unit.new(definition)
     @extra.default_transform
-    @extra.velocity = Config.get("BackgroundVelocity", SF::Vector2f)
-    @extra.move(0.0, -Config.get("WindowHeight", Int32))
+    @extra.velocity = App.config["BackgroundVelocity", SF::Vector2f]
+    @extra.move(0.0, -App.config["WindowHeight", Int32])
 
     self.default_transform
-    self.velocity = Config.get("BackgroundVelocity", SF::Vector2f)
+    self.velocity = App.config["BackgroundVelocity", SF::Vector2f]
   end
 
   def update(dt : SF::Time)

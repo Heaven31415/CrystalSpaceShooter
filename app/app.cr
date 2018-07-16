@@ -5,13 +5,15 @@ require "./state/cache.cr"
 require "./state/manager.cr"
 
 class App
+  def self.config : Properties(Config)
+    Config.instance
+  end
+
   def self.window : SF::RenderWindow
     Window.instance
   end
 
   def initialize
-    Config.load("app.config")
-    # Window.load
     Resources.load_fonts
     Resources.load_sounds
     Resources.load_textures
@@ -19,7 +21,7 @@ class App
     Cache.load
     Manager.load
 
-    @time_per_frame = SF.seconds(1.0 / Config.get("Fps", Float32))
+    @time_per_frame = SF.seconds(1.0 / App.config["Fps", Float32])
     @clock = SF::Clock.new
     @dt = SF::Time.new
   end

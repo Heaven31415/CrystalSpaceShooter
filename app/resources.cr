@@ -17,17 +17,17 @@ class Resources
   end
 
   def self.load_fonts
-    path = Config.get("FontsPath", String)
+    path = App.config["FontsPath", String]
     @@fonts = PackedResources(SF::Font).new(path).unpack(Fonts)
   end
 
   def self.load_sounds
-    path = Config.get("SoundsPath", String)
+    path = App.config["SoundsPath", String]
     @@sounds = PackedResources(SF::SoundBuffer).new(path).unpack(Sounds)
   end
 
   def self.load_textures
-    path = Config.get("TexturesPath", String)
+    path = App.config["TexturesPath", String]
     @@textures = PackedResources(SF::Texture).new(path).unpack(Textures)
   end
 

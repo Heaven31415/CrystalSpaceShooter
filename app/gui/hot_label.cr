@@ -55,7 +55,6 @@ class Label < SF::Text
       end
     end
     
-    puts "style: #{@properties["Style", String]}, value: #{value}"
     self.style = SF::Text::Style.new(value) 
   end
 

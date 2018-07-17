@@ -15,7 +15,7 @@ class Button < SF::RectangleShape
     self.fill_color = @properties["NormalColor", SF::Color]
     self.outline_color = @properties["OutlineColor", SF::Color]
     self.outline_thickness = @properties["OutlineThickness", Float32]
-    self.texture = Resources.textures.get(@properties["TextureName", String])
+    self.texture = App.resources[@properties["TextureName", String], SF::Texture]
 
     # transformation
     apply_origin

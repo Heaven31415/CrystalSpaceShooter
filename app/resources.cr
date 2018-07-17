@@ -17,6 +17,10 @@ class Resources
     @@instance ||= create
   end
 
+  @packed_fonts : PackedResources(SF::Font)? = nil
+  @packed_sounds : PackedResources(SF::SoundBuffer)? = nil 
+  @packed_textures : PackedResources(SF::Texture)? = nil
+
   def initialize
     @fonts = {} of Fonts => SF::Font
     @sounds = {} of Sounds => SF::SoundBuffer
@@ -31,17 +35,26 @@ class Resources
 
   def load_fonts
     path = App.config["FontsPath", String]
-    @fonts = PackedResources(SF::Font).new(path).unpack(Fonts)
+    @packed_fonts = PackedResources(SF::Font).new(path)
+    if packed_fonts = @packed_fonts
+      @fonts = packed_fonts.unpack(Fonts)
+    end
   end
 
   def load_sounds
     path = App.config["SoundsPath", String]
-    @sounds = PackedResources(SF::SoundBuffer).new(path).unpack(Sounds)
+    @packed_sounds = PackedResources(SF::SoundBuffer).new(path)
+    if packed_sounds = @packed_sounds
+      @sounds = packed_sounds.unpack(Sounds)
+    end
   end
 
   def load_textures
     path = App.config["TexturesPath", String]
-    @textures = PackedResources(SF::Texture).new(path).unpack(Textures)
+    @packed_textures = PackedResources(SF::Texture).new(path)
+    if packed_textures = @packed_textures
+      @textures = packed_textures.unpack(Textures)
+    end
   end
 
   def [](font : Fonts) : SF::Font
@@ -54,5 +67,17 @@ class Resources
 
   def [](texture : Textures) : SF::Texture
     @textures[texture]
+  end
+
+  def [](key : String, t : SF::Font.class) : SF::Font
+    @fonts[Fonts.parse(key)]
+  end
+
+  def [](key : String, t : SF::SoundBuffer.class) : SF::SoundBuffer
+    @sounds[Sounds.parse(key)]
+  end
+
+  def [](key : String, t : SF::Texture.class) : SF::Texture
+    @textures[Textures.parse(key)]
   end
 end

@@ -5,12 +5,14 @@ class Label < SF::Text
   @layer = 0
 
   def properties=(@properties)
-    self.font = Resources.fonts.get(@properties["Font", String])
+    self.font = App.resources[@properties["Font", String], SF::Font]
     self.string = @properties["String", String]
     self.character_size = @properties["CharacterSize", Int32]
     self.fill_color = @properties["FillColor", SF::Color]
     self.outline_color = @properties["OutlineColor", SF::Color]
     self.outline_thickness = @properties["OutlineThickness", Float32]
+
+    apply_style
 
     # transformation
     apply_origin
@@ -18,7 +20,6 @@ class Label < SF::Text
     self.position = @properties["Position", SF::Vector2f]
     self.rotation = @properties["Rotation", Float32]
 
-    apply_style
     apply_layer
   end
 
@@ -53,7 +54,8 @@ class Label < SF::Text
         value += member.value
       end
     end
-
+    
+    puts "style: #{@properties["Style", String]}, value: #{value}"
     self.style = SF::Text::Style.new(value) 
   end
 

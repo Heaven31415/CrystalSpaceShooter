@@ -2,6 +2,7 @@ require "crsfml/graphics"
 
 abstract class State
   enum Type
+    Designer
     Game
     Loading
     Menu

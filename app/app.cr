@@ -40,7 +40,7 @@ class App
 
   def run
     @clock.restart
-    Manager.instance.push(State::Type::Game)
+    Manager.instance.push(State::Type::Designer)
     Manager.instance.run
   end
 end

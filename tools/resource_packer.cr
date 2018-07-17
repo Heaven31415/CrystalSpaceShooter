@@ -27,7 +27,11 @@ module Tools
     Dir.each_child(dir_path) do |f|
       path = File.join(dir_path, f)
       if File.info(path).file?
-        named_slices << {name: f.chomp(File.extname(f)), bytes: file_to_bytes(path)}
+        name = ""
+        f.chomp(File.extname(f)).split do |chunk|
+          name += chunk
+        end
+        named_slices << {name: name, bytes: file_to_bytes(path)}
       end
     end
   

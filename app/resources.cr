@@ -23,16 +23,9 @@ class Resources
   @packed_sounds : PackedResources(SF::SoundBuffer)? = nil 
   @packed_textures : PackedResources(SF::Texture)? = nil
 
-  def packed_music : PackedResources(SF::Music)
-    unless packed_music = @packed_music
-      load_music
-    end
-
-    @packed_music.as(PackedResources(SF::Music))
-  end
-
   def initialize
     @fonts = {} of Fonts => SF::Font
+    @music = {} of Music => Bytes
     @sounds = {} of Sounds => SF::SoundBuffer
     @textures = {} of Textures => SF::Texture
   end
@@ -48,20 +41,32 @@ class Resources
     path = App.config["FontsPath", String]
     @packed_fonts = PackedResources(SF::Font).new(path)
     if packed_fonts = @packed_fonts
-      @fonts = packed_fonts.unpack(Fonts)
+      packed_fonts.resources.each do |font|
+        key = Fonts.parse font[:name]
+        @fonts[key] = SF::Font.from_memory(font[:bytes])
+      end
     end
   end
 
   def load_music
     path = App.config["MusicPath", String]
     @packed_music = PackedResources(SF::Music).new(path)
+    if packed_music = @packed_music
+      packed_music.resources.each do |music|
+        key = Music.parse music[:name]
+        @music[key] = music[:bytes]
+      end
+    end
   end
 
   def load_sounds
     path = App.config["SoundsPath", String]
     @packed_sounds = PackedResources(SF::SoundBuffer).new(path)
     if packed_sounds = @packed_sounds
-      @sounds = packed_sounds.unpack(Sounds)
+      packed_sounds.resources.each do |sound|
+        key = Sounds.parse sound[:name]
+        @sounds[key] = SF::SoundBuffer.from_memory(sound[:bytes])
+      end
     end
   end
 
@@ -69,12 +74,19 @@ class Resources
     path = App.config["TexturesPath", String]
     @packed_textures = PackedResources(SF::Texture).new(path)
     if packed_textures = @packed_textures
-      @textures = packed_textures.unpack(Textures)
+      packed_textures.resources.each do |texture|
+        key = Textures.parse texture[:name]
+        @textures[key] = SF::Texture.from_memory(texture[:bytes])
+      end
     end
   end
 
   def [](font : Fonts) : SF::Font
     @fonts[font]
+  end
+
+  def [](music : Music) : Bytes
+    @music[music]
   end
 
   def [](sound : Sounds) : SF::SoundBuffer
@@ -87,6 +99,10 @@ class Resources
 
   def [](key : String, t : SF::Font.class) : SF::Font
     @fonts[Fonts.parse(key)]
+  end
+
+  def [](key : String, t : SF::Music.class) : Bytes
+    @music[Music.parse(key)]
   end
 
   def [](key : String, t : SF::SoundBuffer.class) : SF::SoundBuffer

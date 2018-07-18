@@ -33,16 +33,11 @@ class Audio
   end
 
   def play_music(music : Music, volume : Float32 = 100f32, pitch : Float32 = 1f32, loop : Bool = true)
-    name = music.to_s
-    App.resources.packed_music.resources.each do |resource|
-      if resource[:name] == name
-        @music.open_from_memory(resource[:bytes])
-        @music.volume = volume
-        @music.pitch = pitch
-        @music.play
-        @music.loop = loop
-      end
-    end
+    @music.open_from_memory(App.resources[music])
+    @music.volume = volume
+    @music.pitch = pitch
+    @music.play
+    @music.loop = loop
   end
 
   def stop_music

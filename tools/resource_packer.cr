@@ -64,17 +64,6 @@ class PackedResources(T)
     end
   end
 
-  def unpack(key : K.class) : Hash(K, T) forall K
-    resources = Hash(K, T).new
-    @resources.each do |r|
-      key = K.parse? r[:name]
-      if key
-        resources[key] = T.from_memory(r[:bytes])
-      end
-    end
-    resources
-  end
-
   def self.create(path : String, erase_extensions : Bool = true) : Array({name: String, bytes: Bytes})
     resources = Tools.files_to_bytes(path, erase_extensions)
     resources.sort! { |a, b| a[:name] <=> b[:name] }

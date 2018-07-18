@@ -26,7 +26,7 @@ class Player < Unit
     definition.acceleration = SF.vector2f(200.0, 250.0)
     definition.max_velocity = SF.vector2f(300.0, 150.0)
     definition.max_health = 25
-    definition.texture = App.resources[Textures::Player]
+    definition.texture = App.resources[Textures::PLAYER]
     super(definition)
 
     @weapon_mode = WeaponMode::Missile
@@ -114,7 +114,6 @@ class Player < Unit
 
         add_child(laser)
         world.add(laser)
-        #Game.audio.play("laser.wav")
       end
     when WeaponMode::Beam
       if @children.size < 49
@@ -128,7 +127,6 @@ class Player < Unit
 
         world.add(left_laser)
         world.add(right_laser)
-        #Game.audio.play("laser.wav")
       end
     end
   end

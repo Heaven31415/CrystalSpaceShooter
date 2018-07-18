@@ -2,7 +2,16 @@ require "crsfml/graphics"
 require "zlib"
 
 module Tools
-  extend self 
+  extend self
+
+  def convert_filename(filename : String, erase_extensions : Bool) : String
+    if erase_extensions
+      ext = File.extname(filename)
+      filename.underscore.chomp(ext).upcase.gsub(' ', '_')
+    else
+      filename.underscore.upcase.gsub(/[ \.]/, '_')
+    end
+  end
 
   def file_to_bytes(path : String) : Bytes
     unless File.exists? path
@@ -17,20 +26,17 @@ module Tools
     slice
   end
   
-  def files_to_bytes(dir_path : String) : Array({name: String, bytes: Bytes})
+  def files_to_bytes(dir_path : String, erase_extensions : Bool) : Array({name: String, bytes: Bytes})
     unless Dir.exists? dir_path
       raise "Unable to find directory at: `#{dir_path}`"
     end
   
     named_slices = Array({name: String, bytes: Bytes}).new
-  
+
     Dir.each_child(dir_path) do |f|
       path = File.join(dir_path, f)
       if File.info(path).file?
-        name = ""
-        f.chomp(File.extname(f)).split do |chunk|
-          name += chunk
-        end
+        name = convert_filename(f, erase_extensions)
         named_slices << {name: name, bytes: file_to_bytes(path)}
       end
     end
@@ -67,8 +73,8 @@ class PackedResources(T)
     resources
   end
 
-  def self.create(path : String) : Array({name: String, bytes: Bytes})
-    resources = Tools.files_to_bytes(path)
+  def self.create(path : String, erase_extensions : Bool = true) : Array({name: String, bytes: Bytes})
+    resources = Tools.files_to_bytes(path, erase_extensions)
     resources.sort! { |a, b| a[:name] <=> b[:name] }
     resources
   end
@@ -180,9 +186,11 @@ class PackedResources(T)
 
       @resources.each_with_index do |r, i|
         whitespace = max_name_length + 1 - r[:name].size
-        f << "  " << r[:name].camelcase << " " * whitespace << " = " << i << '\n'
+        f << "  " << r[:name] << " " * whitespace << " = " << i << '\n'
       end
       f << "end"
     end
+
+    puts "Successfully built enum `#{name}` with #{@resources.size} members at: `#{path}`"
   end
 end

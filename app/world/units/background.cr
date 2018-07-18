@@ -6,7 +6,7 @@ class Background < Unit
     definition = UnitDefinition.new
     definition.type = Unit::Type::Background
     definition.max_velocity = App.config["BackgroundVelocity", SF::Vector2f]
-    definition.texture = App.resources[Textures::Background]
+    definition.texture = App.resources[Textures::BACKGROUND]
     definition.texture.repeated = true
     definition.texture_rect = SF.int_rect(0, 0, App.window.size.x, App.window.size.y)
 

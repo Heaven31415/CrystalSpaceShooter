@@ -4,7 +4,7 @@ class Cursor
   include SF::Drawable
 
   def initialize
-    @cursor = SF::Sprite.new(App.resources[Textures::Cursor])
+    @cursor = SF::Sprite.new(App.resources[Textures::CURSOR])
     @cursor.color = SF.color(255, 155, 155, 155)
     @visible = false
   end

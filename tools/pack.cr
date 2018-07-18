@@ -3,12 +3,17 @@ require "crsfml/graphics"
 require "./resource_packer.cr"
 
 fonts_path = "resources/fonts"
+music_path = "resources/music"
 sounds_path = "resources/sounds"
 textures_path = "resources/textures"
 
 packed_fonts = PackedResources(SF::Font).new(fonts_path)
 packed_fonts.save("data/fonts.data")
 packed_fonts.build_enum("data/fonts.cr", "Fonts")
+
+packed_music = PackedResources(SF::Music).new(music_path)
+packed_music.save("data/music.data")
+packed_music.build_enum("data/music.cr", "Music")
 
 packed_sounds = PackedResources(SF::SoundBuffer).new(sounds_path)
 packed_sounds.save("data/sounds.data")

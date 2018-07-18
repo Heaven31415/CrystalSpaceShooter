@@ -46,6 +46,8 @@ module Tools
 end
 
 class PackedResources(T)
+  getter resources
+
   def initialize(path : String)
     info = File.info? path
     unless info

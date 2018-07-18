@@ -1,5 +1,6 @@
 require "../tools/resource_packer.cr"
 require "../data/fonts.cr"
+require "../data/music.cr"
 require "../data/sounds.cr"
 require "../data/textures.cr"
 require "crsfml/audio"
@@ -18,8 +19,17 @@ class Resources
   end
 
   @packed_fonts : PackedResources(SF::Font)? = nil
+  @packed_music : PackedResources(SF::Music)? = nil
   @packed_sounds : PackedResources(SF::SoundBuffer)? = nil 
   @packed_textures : PackedResources(SF::Texture)? = nil
+
+  def packed_music : PackedResources(SF::Music)
+    unless packed_music = @packed_music
+      load_music
+    end
+
+    @packed_music.as(PackedResources(SF::Music))
+  end
 
   def initialize
     @fonts = {} of Fonts => SF::Font
@@ -29,6 +39,7 @@ class Resources
 
   def load_all
     load_fonts
+    load_music
     load_sounds
     load_textures
   end
@@ -39,6 +50,11 @@ class Resources
     if packed_fonts = @packed_fonts
       @fonts = packed_fonts.unpack(Fonts)
     end
+  end
+
+  def load_music
+    path = App.config["MusicPath", String]
+    @packed_music = PackedResources(SF::Music).new(path)
   end
 
   def load_sounds

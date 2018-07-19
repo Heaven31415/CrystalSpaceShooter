@@ -1,8 +1,9 @@
-require "../tools/resource_packer.cr"
 require "../data/fonts.cr"
 require "../data/music.cr"
+require "../data/shaders.cr"
 require "../data/sounds.cr"
 require "../data/textures.cr"
+require "./packed_resources.cr"
 require "crsfml/audio"
 require "crsfml/graphics"
 
@@ -20,12 +21,14 @@ class Resources
 
   @packed_fonts : PackedResources(SF::Font)? = nil
   @packed_music : PackedResources(SF::Music)? = nil
+  @packed_shaders : PackedResources(SF::Shader)? = nil
   @packed_sounds : PackedResources(SF::SoundBuffer)? = nil 
   @packed_textures : PackedResources(SF::Texture)? = nil
 
   def initialize
     @fonts = {} of Fonts => SF::Font
     @music = {} of Music => Bytes
+    @shaders = {} of Shaders => String
     @sounds = {} of Sounds => SF::SoundBuffer
     @textures = {} of Textures => SF::Texture
   end
@@ -33,6 +36,7 @@ class Resources
   def load_all
     load_fonts
     load_music
+    load_shaders
     load_sounds
     load_textures
   end
@@ -42,7 +46,7 @@ class Resources
     @packed_fonts = PackedResources(SF::Font).new(path)
     if packed_fonts = @packed_fonts
       packed_fonts.resources.each do |font|
-        key = Fonts.parse font[:name]
+        key = Fonts.parse(font[:name])
         @fonts[key] = SF::Font.from_memory(font[:bytes])
       end
     end
@@ -53,8 +57,19 @@ class Resources
     @packed_music = PackedResources(SF::Music).new(path)
     if packed_music = @packed_music
       packed_music.resources.each do |music|
-        key = Music.parse music[:name]
+        key = Music.parse(music[:name])
         @music[key] = music[:bytes]
+      end
+    end
+  end
+
+  def load_shaders
+    path = App.config["ShadersPath", String]
+    @packed_shaders = PackedResources(SF::Shader).new(path)
+    if packed_shaders = @packed_shaders
+      packed_shaders.resources.each do |shader|
+        key = Shaders.parse(shader[:name])
+        @shaders[key] = String.new(shader[:bytes])
       end
     end
   end
@@ -64,7 +79,7 @@ class Resources
     @packed_sounds = PackedResources(SF::SoundBuffer).new(path)
     if packed_sounds = @packed_sounds
       packed_sounds.resources.each do |sound|
-        key = Sounds.parse sound[:name]
+        key = Sounds.parse(sound[:name])
         @sounds[key] = SF::SoundBuffer.from_memory(sound[:bytes])
       end
     end
@@ -75,7 +90,7 @@ class Resources
     @packed_textures = PackedResources(SF::Texture).new(path)
     if packed_textures = @packed_textures
       packed_textures.resources.each do |texture|
-        key = Textures.parse texture[:name]
+        key = Textures.parse(texture[:name])
         @textures[key] = SF::Texture.from_memory(texture[:bytes])
       end
     end
@@ -87,6 +102,10 @@ class Resources
 
   def [](music : Music) : Bytes
     @music[music]
+  end
+
+  def [](shader : Shaders) : String
+    @shaders[shader]
   end
 
   def [](sound : Sounds) : SF::SoundBuffer
@@ -103,6 +122,10 @@ class Resources
 
   def [](key : String, t : SF::Music.class) : Bytes
     @music[Music.parse(key)]
+  end
+
+  def [](key : String, t : SF::Shader.class) : String
+    @shaders[Shaders.parse(key)]
   end
 
   def [](key : String, t : SF::SoundBuffer.class) : SF::SoundBuffer

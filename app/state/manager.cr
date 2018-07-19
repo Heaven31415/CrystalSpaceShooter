@@ -34,9 +34,12 @@ class Manager
       request = @requests.pop
       case request
       when State::Type
-        @states.push(App.cache[request])
+        state = App.cache[request]
+        state.on_load
+        @states.push(state)
       when Nil
-        @states.pop
+        state = @states.pop
+        state.on_unload
       end
     end
   end

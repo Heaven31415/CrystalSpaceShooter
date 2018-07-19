@@ -1,187 +1,46 @@
+require "crsfml/audio"
 require "crsfml/graphics"
-require "zlib"
+require "../app/packed_resources.cr"
 
-module Tools
-  extend self
+# Fonts
+fonts_path    = "resources/fonts"
+fonts_enum    = "Fonts"
 
-  def convert_filename(filename : String, erase_extensions : Bool) : String
-    if erase_extensions
-      ext = File.extname(filename)
-      filename.underscore.chomp(ext).upcase.gsub(' ', '_')
-    else
-      filename.underscore.upcase.gsub(/[ \.]/, '_')
-    end
-  end
+# Music
+music_path    = "resources/music"
+music_enum    = "Music"
 
-  def file_to_bytes(path : String) : Bytes
-    unless File.exists? path
-      raise "Unable to find file at: `#{path}`"
-    end
-  
-    f = File.open(path)
-    slice = Bytes.new(f.size)
-    f.read(slice)
-    f.close
-  
-    slice
-  end
-  
-  def files_to_bytes(dir_path : String, erase_extensions : Bool) : Array({name: String, bytes: Bytes})
-    unless Dir.exists? dir_path
-      raise "Unable to find directory at: `#{dir_path}`"
-    end
-  
-    named_slices = Array({name: String, bytes: Bytes}).new
+# Shaders
+shaders_path  = "resources/shaders"
+shaders_enum  = "Shaders"
 
-    Dir.each_child(dir_path) do |f|
-      path = File.join(dir_path, f)
-      if File.info(path).file?
-        name = convert_filename(f, erase_extensions)
-        named_slices << {name: name, bytes: file_to_bytes(path)}
-      end
-    end
-  
-    named_slices
-  end
-end
+# Sounds
+sounds_path   = "resources/sounds"
+sounds_enum   = "Sounds"
 
-class PackedResources(T)
-  getter resources
+# Textures
+textures_path = "resources/textures"
+textures_enum = "Textures"
 
-  def initialize(path : String)
-    info = File.info? path
-    unless info
-      raise "Unable to find anything at: `#{path}`"
-    end
+packed_fonts = PackedResources(SF::Font).from_directory(fonts_path, true)
+packed_fonts.save("data/fonts.data")
+packed_fonts.build_enum("data/fonts.cr", fonts_enum)
 
-    case info
-    when .directory?
-      @resources = PackedResources(T).create(path)
-    when .file?
-      @resources = PackedResources(T).load(path)
-    else
-      raise "Unable to build PackedResources(#{T}) with: `#{info.type}`"
-    end
-  end
+packed_music = PackedResources(SF::Music).from_directory(music_path, true)
+packed_music.save("data/music.data")
+packed_music.build_enum("data/music.cr", music_enum)
 
-  def self.create(path : String, erase_extensions : Bool = true) : Array({name: String, bytes: Bytes})
-    resources = Tools.files_to_bytes(path, erase_extensions)
-    resources.sort! { |a, b| a[:name] <=> b[:name] }
-    resources
-  end
+packed_shaders = PackedResources(SF::Shader).from_directory(shaders_path, false)
+packed_shaders.save("data/shaders.data")
+packed_shaders.build_enum("data/shaders.cr", shaders_enum)
 
-  def self.load(path : String) : Array({name: String, bytes: Bytes})
-    resources = Array({name: String, bytes: Bytes}).new
-    file = File.new(path)
+packed_sounds = PackedResources(SF::SoundBuffer).from_directory(sounds_path, true)
+packed_sounds.save("data/sounds.data")
+packed_sounds.build_enum("data/sounds.cr", sounds_enum)
 
-    Zlib::Reader.open(file) do |io|
-      unless self.read_header(io)
-        raise "Invalid header at `#{path}`"
-      end
+packed_textures = PackedResources(SF::Texture).from_directory(textures_path, true)
+packed_textures.save("data/textures.data")
+packed_textures.build_enum("data/textures.cr", textures_enum)
 
-      unless self.read_typename(io)
-        raise "Invalid typename at `#{path}`"
-      end
 
-      resource_count = self.read_resource_count(io)
-      resource_count.times do |i|
-        resources << self.read_resource(io)
-      end
-    end
-    
-    resources
-  end
 
-  private def write_header(io : IO)
-    header = "PACKED"
-    io.write(header.to_slice)
-  end
-
-  private def self.read_header(io : IO) : Bool
-    io.read_string(6) == "PACKED"
-  end
-
-  private def write_typename(io : IO)
-    slice = T.name.to_slice
-    size = slice.size
-    io.write_bytes(size, IO::ByteFormat::LittleEndian)
-    io.write(slice)
-  end
-
-  private def self.read_typename(io : IO) : Bool
-    size = io.read_bytes(Int32, IO::ByteFormat::LittleEndian)
-    typename = io.read_string(size)
-    typename == T.name
-  end
-
-  private def write_resource_count(io : IO)
-    io.write_bytes(@resources.size, IO::ByteFormat::LittleEndian)
-  end
-
-  private def self.read_resource_count(io : IO) : Int32
-    io.read_bytes(Int32, IO::ByteFormat::LittleEndian)
-  end
-
-  private def write_resource(io : IO, resource : {name: String, bytes: Bytes})
-    io.write_bytes(resource[:name].to_slice.size, IO::ByteFormat::LittleEndian)
-    io.write(resource[:name].to_slice)
-
-    io.write_bytes(resource[:bytes].size, IO::ByteFormat::LittleEndian)
-    io.write(resource[:bytes])
-  end
-
-  private def self.read_resource(io : IO) : {name: String, bytes: Bytes}
-    name_size = io.read_bytes(Int32, IO::ByteFormat::LittleEndian)
-    name = io.read_string(name_size)
-
-    bytes_size = io.read_bytes(Int32, IO::ByteFormat::LittleEndian)
-    bytes = Bytes.new(bytes_size)
-    io.read_fully(bytes)
-
-    {name: name, bytes: bytes}
-  end
-
-  def save(path : String)
-    Zlib::Writer.open(path, Zlib::BEST_COMPRESSION) do |io|
-      write_header(io)
-      write_typename(io)
-      write_resource_count(io)
-      @resources.each do |r|
-        write_resource(io, r)
-      end
-    end
-  end
-
-  def save_debug(path : String)
-    File.open(path, "w") do |io|
-      write_header(io)
-      write_typename(io)
-      write_resource_count(io)
-      @resources.each do |r|
-        write_resource(io, r)
-      end
-    end 
-  end
-
-  def build_enum(path : String, name : String)
-    max_name_length = @resources.max_of do |r|
-      r[:name].size
-    end
-
-    File.open(path, "w") do |f|
-      f << "#" * 45 << '\n'
-      f << "# Autogenerated at " << Time.now << '\n'
-      f << "#" * 45 << '\n'
-      f << '\n'
-      f << "enum " << name.capitalize << '\n'
-
-      @resources.each_with_index do |r, i|
-        whitespace = max_name_length + 1 - r[:name].size
-        f << "  " << r[:name] << " " * whitespace << " = " << i << '\n'
-      end
-      f << "end"
-    end
-
-    puts "Successfully built enum `#{name}` with #{@resources.size} members at: `#{path}`"
-  end
-end

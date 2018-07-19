@@ -38,4 +38,12 @@ class Menu < State
   def isolate_update : Bool
     true
   end
+
+  def on_load
+    puts "Loaded: #{self}"
+  end
+
+  def on_unload
+    puts "Unloaded: #{self}"
+  end
 end

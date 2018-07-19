@@ -58,6 +58,14 @@ class Designer < State
     true
   end
 
+  def on_load
+    puts "Loaded: #{self}"
+  end
+
+  def on_unload
+    puts "Unloaded: #{self}"
+  end
+
   private def load_widget(t : T.class, filename : String) forall T
     begin
       properties = Properties(T).from_file(filename)

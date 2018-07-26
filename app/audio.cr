@@ -13,23 +13,31 @@ class Audio
   end
 
   def initialize
-    @sounds = Array(SF::Sound).new
+    @counter = 0
+    @sounds = Hash(Int32, SF::Sound).new
     @music = SF::Music.new
   end
 
-  def play_sound(sound : Sounds, volume : Float32 = 100f32, pitch : Float32 = 1f32)
+  def play_sound(sound : Sounds, volume : Float32 = 100f32, pitch : Float32 = 1f32) : Int32
     sound_buffer = App.resources[sound]
     sound = SF::Sound.new(sound_buffer)
     sound.volume = volume
     sound.pitch = pitch
     sound.play
 
-    @sounds.push(sound)
     remove_stopped_sounds
+
+    @counter += 1
+    @sounds[@counter] = sound
+    @counter
+  end
+
+  def playing?(id : Int32) : Bool
+    (@sounds.has_key? id) && @sounds[id].status == SF::SoundSource::Playing
   end
 
   private def remove_stopped_sounds
-    @sounds.select! { |sound| sound.status != SF::SoundSource::Stopped }
+    @sounds.select! { |id, sound| sound.status != SF::SoundSource::Stopped }
   end
 
   def play_music(music : Music, volume : Float32 = 100f32, pitch : Float32 = 1f32, loop : Bool = true)

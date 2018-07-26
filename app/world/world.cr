@@ -1,11 +1,8 @@
 require "./units/background.cr"
 
-# unit needs access to: Manager, World, Player
-# 1. Manager.push(State::Type::Menu)
-# 2. Cache.get(State::Type::Game).world
-# 3. Player.instance
-
 class World
+  include SF::Drawable
+
   def initialize
     @units = [] of Unit
     add(Background.new)
@@ -23,7 +20,7 @@ class World
     @units.select { |u| predicate.call(u) }
   end
 
-  def draw(target : SF::RenderTarget)
+  def draw(target : SF::RenderTarget, states : SF::RenderStates)
     @units.sort!
     @units.each { |u| target.draw(u) }
   end

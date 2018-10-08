@@ -2,22 +2,22 @@ require "./unit.cr"
 require "../ai/*"
 
 class EnemyFighter < Unit
-  @ai : AI | Nil
+  @ai : AI?
 
   def initialize
     definition = UnitDefinition.new
     definition.type = Unit::Type::Enemy
     definition.acceleration = SF.vector2f(150.0, 200.0)
-    definition.max_velocity = SF.vector2f(100.0, 200.0)
+    definition.max_velocity = SF.vector2f(150.0, 300.0)
     definition.texture = App.resources[Textures::ENEMY_FIGHTER]
     super(definition)
 
-    @ai = Fighter.new(self)
+    @ai = AIFighter.new(self)
   end
 
   def update(dt)
     if ai = @ai
-      ai.think(dt)
+      ai.update(dt)
     end
     super
   end
@@ -27,7 +27,7 @@ class EnemyFighter < Unit
   end
 
   def fire_laser
-    if @children.size < 3
+    if @children.size < 5
       laser = Laser.new(WeaponType::Enemy, 1)
       laser.position = self.position
       laser.set_scale(self.scale.x * 0.8f32, self.scale.y * 0.8f32)
@@ -38,7 +38,7 @@ class EnemyFighter < Unit
 end
 
 class EnemyCarrier < Unit
-  @ai : AI | Nil
+  @ai : AI?
 
   def initialize
     definition = UnitDefinition.new
@@ -49,13 +49,13 @@ class EnemyCarrier < Unit
     definition.texture = App.resources[Textures::ENEMY_CARRIER]
     super(definition)
 
-    @ai = Carrier.new(self)
+    @ai = AICarrier.new(self)
     set_scale(0.8, 0.8)
   end
 
   def update(dt)
     if ai = @ai
-      ai.think(dt)
+      ai.update(dt)
     end
     super
   end
@@ -66,7 +66,8 @@ class EnemyCarrier < Unit
 end
 
 class EnemyInterceptor < Unit
-  @ai : AI | Nil
+  SCALE = 0.17
+  @ai : AI?
 
   def initialize
     definition = UnitDefinition.new
@@ -76,13 +77,13 @@ class EnemyInterceptor < Unit
     definition.texture = App.resources[Textures::ENEMY_INTERCEPTOR]
     super(definition)
 
-    @ai = Interceptor.new(self)
-    set_scale(0.15, 0.15)
+    @ai = AIInterceptor.new(self)
+    set_scale(SCALE, SCALE)
   end
 
   def update(dt)
     if ai = @ai
-      ai.think(dt)
+      ai.update(dt)
     end
     super
   end
@@ -95,7 +96,7 @@ class EnemyInterceptor < Unit
     if @children.size < 3
       laser = Laser.new(WeaponType::Enemy, 1)
       laser.position = self.position
-      laser.set_scale(0.15, 0.15)
+      laser.set_scale(SCALE, SCALE)
       add_child(laser)
       world.add(laser)
     end

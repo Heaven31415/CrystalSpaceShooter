@@ -6,6 +6,7 @@ class TimeCallback
     Finite
     Infinite
   end
+
   @time : SF::Time
   @initial_time : SF::Time
 

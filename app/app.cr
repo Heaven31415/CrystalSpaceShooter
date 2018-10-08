@@ -36,7 +36,7 @@ class App
 
   def initialize
     Resources.instance.load_all
-    Audio.instance.play_music(Music::JUHANI_JUNKALA_RETRO_GAME_MUSIC_PACK_TITLE_SCREEN)
+    Audio.instance.play_music(Music::JUHANI_JUNKALA_RETRO_GAME_MUSIC_PACK_TITLE_SCREEN, 5f32)
 
     @time_per_frame = SF.seconds(1.0 / App.config["Fps", Float32])
     @clock = SF::Clock.new
@@ -45,7 +45,7 @@ class App
 
   def run
     @clock.restart
-    Manager.instance.push(State::Type::Designer)
+    Manager.instance.push(State::Type::Game)
     Manager.instance.run
     Audio.instance.stop_music
   end

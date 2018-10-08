@@ -56,11 +56,12 @@ class Manager
         end
 
         update(@time_per_frame)
-        render(App.window)
         process_requests
 
         @dt -= @time_per_frame
       end
+
+      render(App.window)
     end
   end
 

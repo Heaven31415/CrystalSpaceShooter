@@ -21,7 +21,6 @@ class World
   end
 
   def draw(target : SF::RenderTarget, states : SF::RenderStates)
-    @units.sort!
     @units.each { |u| target.draw(u) }
   end
 

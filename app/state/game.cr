@@ -30,11 +30,6 @@ class Game < State
       fighter.position = {x, y}
       @world.add(fighter)
     end
-
-    # Enemies Test
-    # @world.add(EnemyCarrier.new)
-    # @world.add(EnemyFighter.new)
-    # @world.add(EnemyInterceptor.new)
   end
 
   def draw(target : SF::RenderTarget)

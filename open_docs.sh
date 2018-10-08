@@ -1,5 +1,5 @@
 firefox -new-tab 'http://devdocs.io/crystal/'
-firefox -new-tab 'https://crystal-lang.org/api/0.25.1/'
+firefox -new-tab 'https://crystal-lang.org/api/'
 firefox -new-tab 'https://crystal-lang.org/docs/overview/'
 firefox -new-tab 'http://oprypin.github.io/crsfml/api/SF.html'
 firefox -new-tab 'http://oprypin.github.io/crsfml/tutorials/'

@@ -12,37 +12,42 @@ class Meteor < Unit
   end
 
   def initialize(@meteor_type : Type)
-    definition = UnitDefinition.new
-    definition.type = Unit::Type::EnemyWeapon
-    definition.acceleration = SF.vector2f(200.0, 200.0)
-    definition.max_velocity = SF.vector2f(200.0, 200.0)
     case @meteor_type
     when Type::Big
-      definition.texture = App.resources[Textures.new(Random.rand(7..10))]
+      texture = App.resources[Textures.new(Random.rand(7..10))]
     when Type::Medium
-      definition.texture = App.resources[Textures.new(Random.rand(11..12))]
+      texture = App.resources[Textures.new(Random.rand(11..12))]
     when Type::Small
-      definition.texture = App.resources[Textures.new(Random.rand(13..14))]
+      texture = App.resources[Textures.new(Random.rand(13..14))]
     when Type::Tiny
-      definition.texture = App.resources[Textures.new(Random.rand(15..16))]
+      texture = App.resources[Textures.new(Random.rand(15..16))]
     else
-      raise "Invalid Meteor::Type value: `#{meteor_type}`"
+      raise "Invalid Meteor::Type value: #{meteor_type}"
     end
-    super(definition)
+
+    template = UnitTemplate.new(
+      type: Unit::Type::EnemyWeapon,
+      acceleration: SF.vector2f(200.0, 200.0),
+      max_velocity: SF.vector2f(200.0, 200.0),
+      max_health: 1,
+      texture: texture
+    )
+
+    super(template)
   end
 
-  def on_death
+  def on_death : Nil
     value = @meteor_type.value
     if value < 3
       spawn_children(Meteor::Type.new(value + 1))
     end
   end
 
-  def on_collision(other)
+  def on_collision(other : Unit) : Nil
     other.damage((@meteor_type.value - 4).abs)
   end
 
-  def update(dt)
+  def update(dt : SF::Time) : Nil
     @velocity.y += @acceleration.y * dt.as_seconds
     super
   end

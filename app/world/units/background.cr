@@ -3,25 +3,29 @@ require "./unit"
 
 class Background < Unit
   def initialize
-    definition = UnitDefinition.new
-    definition.type = Unit::Type::Background
-    definition.max_velocity = App.config["BackgroundVelocity", SF::Vector2f]
-    definition.texture = App.resources[Textures::BACKGROUND]
-    definition.texture.repeated = true
-    definition.texture_rect = SF.int_rect(0, 0, App.window.size.x, App.window.size.y)
+    texture = App.resources[Textures::BACKGROUND]
+    texture.repeated = true
 
-    super(definition)
+    template = UnitTemplate.new(
+      type: Unit::Type::Background,
+      acceleration: SF.vector2f(0.0, 0.0),
+      max_velocity: App.config["BackgroundVelocity", SF::Vector2f],
+      max_health: 1,
+      texture: texture,
+      texture_rect: SF.int_rect(0, 0, App.window.size.x, App.window.size.y)
+    )
 
-    @extra = Unit.new(definition)
+    super(template)
+    default_transform
+    @velocity = App.config["BackgroundVelocity", SF::Vector2f]
+
+    @extra = Unit.new(template)
     @extra.default_transform
     @extra.velocity = App.config["BackgroundVelocity", SF::Vector2f]
     @extra.move(0.0, -App.window.size.y)
-
-    self.default_transform
-    self.velocity = App.config["BackgroundVelocity", SF::Vector2f]
   end
 
-  def update(dt : SF::Time)
+  def update(dt : SF::Time) : Nil
     @extra.update(dt)
     super
 
@@ -29,7 +33,7 @@ class Background < Unit
     @extra.move(0.0, -2 * App.window.size.y) if @extra.position.y > App.window.size.y
   end
 
-  def draw(target, states)
+  def draw(target : SF::RenderTarget, states : SF::RenderStates) : Nil
     @extra.draw(target, states)
     super
   end

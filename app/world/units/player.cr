@@ -21,13 +21,15 @@ class Player < Unit
   end
 
   def initialize
-    definition = UnitDefinition.new
-    definition.type = Unit::Type::Player
-    definition.acceleration = SF.vector2f(200.0, 250.0)
-    definition.max_velocity = SF.vector2f(300.0, 150.0)
-    definition.max_health = 25
-    definition.texture = App.resources[Textures::PLAYER]
-    super(definition)
+    template = UnitTemplate.new(
+      type: Unit::Type::Player,
+      acceleration: SF.vector2f(200.0, 250.0),
+      max_velocity: SF.vector2f(300.0, 150.0),
+      max_health: 25,
+      texture: App.resources[Textures::PLAYER]
+    )
+    
+    super(template)
 
     @weapon_mode = WeaponMode::Missile
     @jump_ready = false
@@ -88,7 +90,7 @@ class Player < Unit
     end
 
     if position_top < App.window.size.y / 2.0
-      @velocity.y += 5.1 * @acceleration.y * dt.as_seconds
+      @velocity.y += 5.0 * @acceleration.y * dt.as_seconds
     end
 
     super

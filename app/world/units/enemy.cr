@@ -5,28 +5,31 @@ class EnemyFighter < Unit
   @ai : AI?
 
   def initialize
-    definition = UnitDefinition.new
-    definition.type = Unit::Type::Enemy
-    definition.acceleration = SF.vector2f(150.0, 200.0)
-    definition.max_velocity = SF.vector2f(150.0, 300.0)
-    definition.texture = App.resources[Textures::ENEMY_FIGHTER]
-    super(definition)
+    template = UnitTemplate.new(
+      type: Unit::Type::Enemy,
+      acceleration: SF.vector2f(150.0, 200.0),
+      max_velocity: SF.vector2f(150.0, 300.0),
+      max_health: 1,
+      texture: App.resources[Textures::ENEMY_FIGHTER]
+    )
 
+    super(template)
     @ai = AIFighter.new(self)
   end
 
-  def update(dt)
+  def update(dt : SF::Time) : Nil
     if ai = @ai
       ai.update(dt)
     end
+
     super
   end
 
-  def on_collision(other)
+  def on_collision(other : Unit) : Nil
     other.damage(1)
   end
 
-  def fire_laser
+  def fire_laser : Nil
     if @children.size < 5
       laser = Laser.new(WeaponType::Enemy, 1)
       laser.position = self.position
@@ -38,25 +41,28 @@ class EnemyFighter < Unit
 end
 
 class EnemyCarrier < Unit
+  SCALE = 0.80
   @ai : AI?
 
   def initialize
-    definition = UnitDefinition.new
-    definition.type = Unit::Type::Enemy
-    definition.acceleration = SF.vector2f(25.0, 25.0)
-    definition.max_velocity = SF.vector2f(50.0, 50.0)
-    definition.max_health = 25
-    definition.texture = App.resources[Textures::ENEMY_CARRIER]
-    super(definition)
+    template = UnitTemplate.new(
+      type: Unit::Type::Enemy,
+      acceleration: SF.vector2f(25.0, 25.0),
+      max_velocity: SF.vector2f(50.0, 50.0),
+      max_health: 25,
+      texture: App.resources[Textures::ENEMY_CARRIER]
+    )
 
+    super(template)
     @ai = AICarrier.new(self)
-    set_scale(0.8, 0.8)
+    set_scale(SCALE, SCALE)
   end
 
-  def update(dt)
+  def update(dt : SF::Time) : Nil
     if ai = @ai
       ai.update(dt)
     end
+
     super
   end
 
@@ -70,29 +76,32 @@ class EnemyInterceptor < Unit
   @ai : AI?
 
   def initialize
-    definition = UnitDefinition.new
-    definition.type = Unit::Type::Enemy
-    definition.acceleration = SF.vector2f(100.0, 100.0)
-    definition.max_velocity = SF.vector2f(200.0, 200.0)
-    definition.texture = App.resources[Textures::ENEMY_INTERCEPTOR]
-    super(definition)
+    template = UnitTemplate.new(
+      type: Unit::Type::Enemy,
+      acceleration: SF.vector2f(100.0, 100.0),
+      max_velocity: SF.vector2f(200.0, 200.0),
+      max_health: 1,
+      texture: App.resources[Textures::ENEMY_INTERCEPTOR]
+    )
 
+    super(template)
     @ai = AIInterceptor.new(self)
     set_scale(SCALE, SCALE)
   end
 
-  def update(dt)
+  def update(dt : SF::Time) : Nil
     if ai = @ai
       ai.update(dt)
     end
+
     super
   end
 
-  def on_collision(other)
+  def on_collision(other : Unit) : Nil
     other.damage(1)
   end
 
-  def fire_laser
+  def fire_laser : Nil
     if @children.size < 3
       laser = Laser.new(WeaponType::Enemy, 1)
       laser.position = self.position

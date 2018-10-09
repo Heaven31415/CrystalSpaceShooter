@@ -1,10 +1,10 @@
-require "../resources"
+require "../../resources"
 
 class Label < SF::Text
   @@minimal_size = 10
 
   def initialize(string : String, character_size : Int, @width : Float32)
-    super(string, App.resources[Fonts::Calibri], character_size)
+    super(string, App.resources[Fonts::CALIBRI], character_size)
     while self.character_size > @@minimal_size && global_bounds.width > @width
       self.character_size -= 1
     end

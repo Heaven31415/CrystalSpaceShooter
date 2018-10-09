@@ -48,6 +48,14 @@ class Audio
     @music.loop = loop
   end
 
+  def music_volume=(v : Float32)
+    @music.volume = v
+  end
+
+  def music_volume : Float3 
+    @music.volume
+  end
+
   def stop_music
     @music.stop
   end

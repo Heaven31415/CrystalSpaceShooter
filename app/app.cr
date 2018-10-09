@@ -36,7 +36,10 @@ class App
 
   def initialize
     Resources.instance.load_all
-    Audio.instance.play_music(Music::JUHANI_JUNKALA_RETRO_GAME_MUSIC_PACK_TITLE_SCREEN, 0.05f32)
+    Audio.instance.play_music(
+      Music::JUHANI_JUNKALA_RETRO_GAME_MUSIC_PACK_TITLE_SCREEN, 
+      App.config["Volume", Float32]
+    )
   end
 
   def run

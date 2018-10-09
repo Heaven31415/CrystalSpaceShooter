@@ -14,7 +14,7 @@ class Manager
 
   def initialize
     @states = [] of State
-    @requests = [] of State::Type | Nil
+    @requests = [] of State::Type?
     @time_per_frame = SF.seconds(1.0 / App.config["Fps", Float32])
     @clock = SF::Clock.new
     @dt = SF::Time.new

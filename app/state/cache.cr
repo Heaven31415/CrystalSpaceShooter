@@ -30,8 +30,8 @@ class Cache
 
   private def factory(state : State::Type) : State
     case state
-    when State::Type::Designer
-      @states[state] = Designer.new
+    # when State::Type::Designer
+    #   @states[state] = Designer.new
     when State::Type::Game
       @states[state] = Game.new
     when State::Type::Loading

@@ -12,8 +12,14 @@ class Window
     mouse_cursor_visible = App.config["MouseCursorVisible", Bool]
     desktop = SF::VideoMode.desktop_mode
 
-    video_mode = SF::VideoMode.new(width, height)
-    window = SF::RenderWindow.new(video_mode, name)
+    if App.config["Fullscreen", Bool]
+      video_mode = SF::VideoMode.desktop_mode
+      style = SF::Style::Fullscreen
+    else
+      video_mode = SF::VideoMode.new(width, height)
+      style = SF::Style::Close
+    end
+    window = SF::RenderWindow.new(video_mode, name, style)
     
     window.position = {(desktop.width - width) / 2, (desktop.height - height) / 2}
     window.vertical_sync_enabled = vertical_sync_enabled

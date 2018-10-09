@@ -4,7 +4,6 @@ require "./manager"
 class Menu < State
   def initialize
     @cursor = Cursor.new
-
   end
 
   def draw(target : SF::RenderTarget)

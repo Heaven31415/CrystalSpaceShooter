@@ -6,10 +6,18 @@ class Cursor
   def initialize
     @cursor = SF::Sprite.new(App.resources[Textures::CURSOR])
     @cursor.color = SF.color(255, 155, 155, 155)
+
+    bounds = @cursor.local_bounds
+    @cursor.origin = {bounds.width / 2.0, bounds.height / 2.0}
     @visible = false
+
+    w = App.window
+    pos = {w.size.x / 2, w.size.y / 2}
+    SF::Mouse.set_position(pos, w)
+    @cursor.position = pos
   end
 
-  def handle_input(event : SF::Event)
+  def handle_input(event : SF::Event) : Nil
     case event
     when SF::Event::MouseEntered
       @visible = true
@@ -24,7 +32,7 @@ class Cursor
     end
   end
 
-  def draw(target, states)
+  def draw(target : SF::RenderTarget, states : SF::RenderStates) : Nil
     target.draw(@cursor, states) if @visible
   end
 end

@@ -1,5 +1,5 @@
-require "../../../common/utilities.cr"
-require "./unit.cr"
+require "../../../common/utilities"
+require "./unit"
 
 class Background < Unit
   def initialize

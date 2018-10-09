@@ -1,4 +1,4 @@
-require "./label.cr"
+require "./label"
 
 class ButtonStyle
   property normal_color : SF::Color

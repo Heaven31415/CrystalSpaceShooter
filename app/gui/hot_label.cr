@@ -1,4 +1,4 @@
-require "./properties.cr"
+require "./properties"
 
 class Label < SF::Text
   @properties : Properties(Label)

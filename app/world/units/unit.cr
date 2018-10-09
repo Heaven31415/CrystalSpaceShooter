@@ -1,6 +1,6 @@
 require "crsfml/graphics"
-require "../../state/cache.cr"
-require "../../state/game.cr"
+require "../../state/cache"
+require "../../state/game"
 
 struct UnitDefinition
   property type : Unit::Type

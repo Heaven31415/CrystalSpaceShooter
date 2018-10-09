@@ -1,4 +1,4 @@
-require "./resources.cr"
+require "./resources"
 
 class Audio
   @@instance : Audio?

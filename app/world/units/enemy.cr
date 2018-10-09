@@ -1,4 +1,4 @@
-require "./unit.cr"
+require "./unit"
 require "../ai/*"
 
 class EnemyFighter < Unit

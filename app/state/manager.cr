@@ -1,4 +1,4 @@
-require "./cache.cr"
+require "./cache"
 
 class Manager
   @@instance : Manager?

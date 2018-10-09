@@ -1,6 +1,6 @@
 require "crsfml/audio"
 require "crsfml/graphics"
-require "../app/packed_resources.cr"
+require "../app/packed_resources"
 
 # Fonts
 fonts_path    = "resources/fonts"

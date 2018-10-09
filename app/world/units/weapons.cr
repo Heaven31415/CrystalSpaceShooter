@@ -1,4 +1,4 @@
-require "./unit.cr"
+require "./unit"
 
 enum WeaponType
   Enemy

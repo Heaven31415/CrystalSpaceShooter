@@ -1,4 +1,4 @@
-require "../resources.cr"
+require "../resources"
 
 class Label < SF::Text
   @@minimal_size = 10

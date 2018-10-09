@@ -1,7 +1,7 @@
-require "../../../common/utilities.cr"
-require "../world.cr"
-require "./unit.cr"
-require "./weapons.cr"
+require "../../../common/utilities"
+require "../world"
+require "./unit"
+require "./weapons"
 
 class Meteor < Unit
   enum Type

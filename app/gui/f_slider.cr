@@ -1,5 +1,5 @@
 require "crsfml/graphics"
-require "./properties.cr"
+require "./properties"
 
 # todo: rename class from XSlider to Slider (lines: 36, 52, 109)
 # create getters and setters for almost anything

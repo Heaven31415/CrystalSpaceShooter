@@ -1,7 +1,7 @@
-require "./unit.cr"
-require "./weapons.cr"
-require "../world.cr"
-require "../../../common/time_callback.cr"
+require "./unit"
+require "./weapons"
+require "../world"
+require "../../../common/time_callback"
 
 class Player < Unit
   @@instance : Player?

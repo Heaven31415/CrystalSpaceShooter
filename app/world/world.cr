@@ -1,4 +1,4 @@
-require "./units/background.cr"
+require "./units/background"
 
 class World
   include SF::Drawable

@@ -1,4 +1,4 @@
-require "./gui/properties.cr"
+require "./gui/properties"
 
 class Config
   @@instance : Properties(Config)?

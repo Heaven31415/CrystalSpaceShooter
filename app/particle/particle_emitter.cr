@@ -1,4 +1,4 @@
-require "./particle.cr"
+require "./particle"
 
 # todo: remove me when https://github.com/crystal-lang/crystal/pull/6445 is merged
 

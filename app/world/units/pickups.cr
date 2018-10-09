@@ -1,4 +1,4 @@
-require "./unit.cr"
+require "./unit"
 
 class Pickup < Unit
   def initialize(max_velocity : SF::Vector2f, texture : SF::Texture)

@@ -1,6 +1,6 @@
 require "crsfml/graphics"
-require "./properties.cr"
-require "../../data/sounds.cr"
+require "./properties"
+require "../../data/sounds"
 
 # todo: rename class from XButton to Button
 

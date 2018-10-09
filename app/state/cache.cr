@@ -1,9 +1,9 @@
-require "./state.cr"
-require "./designer.cr"
-require "./game.cr"
-require "./loading.cr"
-require "./menu.cr"
-require "./title.cr"
+require "./state"
+require "./designer"
+require "./game"
+require "./loading"
+require "./menu"
+require "./title"
 
 class Cache
   @@instance : Cache?

@@ -1,4 +1,4 @@
-require "./properties.cr"
+require "./properties"
 
 class Button < SF::RectangleShape
   enum State

@@ -1,4 +1,4 @@
-require "../app/world/units/player.cr"
+require "../app/world/units/player"
 
 class HUD < SF::RectangleShape
   def initialize(size : SF::Vector2 = SF.vector2(200, 25))

@@ -1,4 +1,4 @@
-require "openssl/sha1.cr"
+require "openssl/sha1"
 
 class Pair(T1, T2)
   property first, second

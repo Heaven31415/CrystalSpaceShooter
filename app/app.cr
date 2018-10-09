@@ -1,9 +1,9 @@
-require "./audio.cr"
-require "./config.cr"
-require "./resources.cr"
-require "./window.cr"
-require "./state/cache.cr"
-require "./state/manager.cr"
+require "./audio"
+require "./config"
+require "./resources"
+require "./window"
+require "./state/cache"
+require "./state/manager"
 
 class App
   def self.audio : Audio

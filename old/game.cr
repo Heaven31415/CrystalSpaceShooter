@@ -1,8 +1,8 @@
-require "../common/sound_system.cr"
-require "../gui/button.cr"
-require "../gui/cursor.cr"
-require "../gui/hud.cr"
-require "./world.cr"
+require "../common/sound_system"
+require "../gui/button"
+require "../gui/cursor"
+require "../gui/hud"
+require "./world"
 
 class Game
   @@TimePerFrame = SF.seconds(1.0 / Config.fps)

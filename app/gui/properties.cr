@@ -1,5 +1,5 @@
 require "crsfml/graphics"
-require "openssl/sha1.cr"
+require "openssl/sha1"
 
 alias Property = Bool | Float32 | SF::Color | SF::FloatRect | SF::IntRect | SF::Vector2f | SF::Vector2i | String | Int32
 

@@ -1,9 +1,9 @@
-require "./state.cr"
-require "./manager.cr"
-require "../gui/cursor.cr"
-require "../gui/hot_button.cr"
-require "../gui/hot_label.cr"
-require "../../common/utilities.cr"
+require "./state"
+require "./manager"
+require "../gui/cursor"
+require "../gui/hot_button"
+require "../gui/hot_label"
+require "../../common/utilities"
 
 # todo: move me somewhere inside gui folder
 alias Widget = Button | Label
@@ -21,9 +21,9 @@ class Designer < State
     # sort widgets by layer value
     sorted_widgets = Array(Widget).new(@gui.size)
     @gui.each_value { |widget| sorted_widgets << widget }
-    sorted_widgets.sort! { |a, b| a.layer <=> b.layer }
+    # sorted_widgets.sort! { |a, b| a.layer <=> b.layer }
 
-    sorted_widgets.each { |widget| target.draw(widget) }
+    # sorted_widgets.each { |widget| target.draw(widget) }
     target.draw(@cursor)
   end
 
@@ -39,7 +39,7 @@ class Designer < State
     end
 
     @cursor.handle_input(event)
-    @gui.each_value { |widget| widget.handle_input(event) }
+    # @gui.each_value { |widget| widget.handle_input(event) }
   end
 
   def update(dt : SF::Time)

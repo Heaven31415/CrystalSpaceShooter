@@ -1,5 +1,5 @@
 require "crsfml/graphics"
-require "./properties.cr"
+require "./properties"
 
 # todo: rename class from XLabel to Label
 

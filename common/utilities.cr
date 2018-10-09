@@ -1,15 +1,5 @@
 require "openssl/sha1"
 
-module Math
-  def self.cartesian_to_polar(x : Number, y : Number)
-    {radius: Math.hypot(x, y), angle: Math.atan2(y, x)}
-  end
-
-  def self.polar_to_cartesian(radius : Number, angle : Number)
-    {x: radius * Math.cos(angle), y: radius * Math.sin(angle)}
-  end
-end
-
 # todo: move those methods inside DirectoryWatcher
 
 alias FileHash = StaticArray(UInt8, 20)

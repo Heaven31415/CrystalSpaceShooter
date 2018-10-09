@@ -14,6 +14,7 @@ class Game < State
 
     @carrier_cb = TimeCallback.new
     @fighter_cb = TimeCallback.new
+    @meteor_cb = TimeCallback.new
 
     @carrier_cb.add(SF.seconds(14)) do
       carrier = EnemyCarrier.new
@@ -29,6 +30,14 @@ class Game < State
       y = -(100f32 + 100f32 * rand.to_f32)
       fighter.position = {x, y}
       @world.add(fighter)
+    end
+
+    @meteor_cb.add(SF.seconds(5)) do
+      meteor = Meteor.new(Meteor::Type.new(rand(0..3)))
+      x = App.window.size.x * rand.to_f32
+      y = -(100f32 + 100f32 * rand.to_f32)
+      meteor.position = {x, y}
+      @world.add(meteor)
     end
   end
 
@@ -48,9 +57,10 @@ class Game < State
     App.player.handle_input(event)
   end
 
-  def update(dt : SF::Time)
+  def update(dt : SF::Time) : Nil
     @carrier_cb.update(dt)
     @fighter_cb.update(dt)
+    @meteor_cb.update(dt)
     @world.update(dt)
   end
 

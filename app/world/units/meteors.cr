@@ -14,13 +14,13 @@ class Meteor < Unit
   def initialize(@meteor_type : Type)
     case @meteor_type
     when Type::Big
-      texture = App.resources[Textures.new(Random.rand(7..10))]
+      texture = App.resources[Textures.new(Random.rand(8..11))]
     when Type::Medium
-      texture = App.resources[Textures.new(Random.rand(11..12))]
+      texture = App.resources[Textures.new(Random.rand(12..13))]
     when Type::Small
-      texture = App.resources[Textures.new(Random.rand(13..14))]
+      texture = App.resources[Textures.new(Random.rand(14..15))]
     when Type::Tiny
-      texture = App.resources[Textures.new(Random.rand(15..16))]
+      texture = App.resources[Textures.new(Random.rand(16..17))]
     else
       raise "Invalid Meteor::Type value: #{meteor_type}"
     end
@@ -53,19 +53,20 @@ class Meteor < Unit
   end
 
   private def spawn_children(meteor_type : Type)
-    # todo: rework those Math functions to use vector2 instead of tuple
-    polar = Math.cartesian_to_polar(@velocity.x, @velocity.y)
-    angle = Random.rand( Math::PI/6 .. Math::PI/3 )
-    velocity_a = Math.polar_to_cartesian(polar[:radius], polar[:angle] + angle)
-    velocity_b = Math.polar_to_cartesian(polar[:radius], polar[:angle] - angle)
+    radius = Math.hypot(@velocity.x, @velocity.y)
+    angle = Math.atan2(@velocity.y, @velocity.x)
+    da = Random.rand( Math::PI/6 .. Math::PI/3 )
+
+    velocity_a = SF.vector2f(radius * Math.cos(angle + da), radius * Math.sin(angle + da))
+    velocity_b = SF.vector2f(radius * Math.cos(angle - da), radius * Math.sin(angle - da))
 
     child_a = Meteor.new(meteor_type)
     child_a.position = position
-    child_a.velocity = SF.vector2f(velocity_a[:x], velocity_a[:y])
+    child_a.velocity = velocity_a
 
     child_b = Meteor.new(meteor_type)
     child_b.position = position
-    child_b.velocity = SF.vector2f(velocity_b[:x], velocity_b[:y])
+    child_b.velocity = velocity_b
 
     world.add(child_a)
     world.add(child_b)

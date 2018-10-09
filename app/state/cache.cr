@@ -1,8 +1,8 @@
-require "./state"
 require "./designer"
 require "./game"
 require "./loading"
 require "./menu"
+require "./state"
 require "./title"
 
 class Cache
@@ -41,7 +41,7 @@ class Cache
     when State::Type::Title
       @states[state] = Title.new
     else
-      raise "Invalid State::Type enum value: #{state}"
+      raise "Invalid State::Type value: #{state}"
     end
   end
 end

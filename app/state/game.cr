@@ -94,7 +94,7 @@ class Game < State
   end
 
   def on_load
-    # App.manager.push(State::Type::Intro)
+    App.manager.push(State::Type::Intro)
     puts "Loaded: #{self}"
   end
 

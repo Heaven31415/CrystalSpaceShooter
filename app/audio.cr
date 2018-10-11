@@ -14,22 +14,35 @@ class Audio
 
   def initialize
     @counter = 0
-    @sounds = Hash(Int32, SF::Sound).new
+    @sounds = Array(SF::Sound).new(128) do
+      SF::Sound.new
+    end
     @music = SF::Music.new
   end
 
-  def play_sound(sound : Sounds, volume : Float32 = 100f32, pitch : Float32 = 1f32) : Int32
-    sound_buffer = App.resources[sound]
-    sound = SF::Sound.new(sound_buffer)
+  def play_sound(sound_id : Sounds, volume : Float32 = 100f32, pitch : Float32 = 1f32) : Int32
+    i = 0
+    while true
+      if i == 128 || @sounds[i].status == SF::SoundSource::Stopped
+        break
+      end
+
+      i += 1
+    end
+
+    if i == 128
+      raise "Unable to find any free sound, you are playing too many sounds."
+    end
+
+    sound = @sounds[i]
+    sound.buffer = App.resources[sound_id]
     sound.volume = volume
     sound.pitch = pitch
     sound.play
-
-    remove_stopped_sounds
-
+    
+    id = (@counter << 8) + i
     @counter += 1
-    @sounds[@counter] = sound
-    @counter
+    id
   end
 
   def playing?(id : Int32) : Bool

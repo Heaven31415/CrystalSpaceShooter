@@ -20,6 +20,27 @@ class Manager
     @dt = SF::Time.new
   end
 
+  def state : State::Type?
+    return nil if @states.size == 0
+
+    case @states[@states.size - 1]
+      # when Designer
+      #   State::Type::Designer
+      when Game
+        State::Type::Game
+      when Intro
+        State::Type::Intro
+      when Loading
+        State::Type::Loading
+      when Menu
+        State::Type::Menu
+      when Title
+        State::Type::Title
+      else
+        nil
+      end
+  end
+
   def push(state : State::Type)
     @requests.push(state)
   end

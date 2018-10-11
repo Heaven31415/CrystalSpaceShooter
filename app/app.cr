@@ -36,10 +36,6 @@ class App
 
   def initialize
     Resources.instance.load_all
-    Audio.instance.play_music(
-      Music::LEVEL_1, 
-      App.config["Volume", Float32]
-    )
   end
 
   def run

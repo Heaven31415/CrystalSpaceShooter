@@ -4,6 +4,7 @@ abstract class State
   enum Type
     Designer
     Game
+    Intro
     Loading
     Menu
     Title

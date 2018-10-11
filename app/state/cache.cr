@@ -1,5 +1,6 @@
 require "./designer"
 require "./game"
+require "./intro"
 require "./loading"
 require "./menu"
 require "./state"
@@ -32,13 +33,15 @@ class Cache
     case state
     # when State::Type::Designer
     #   @states[state] = Designer.new
-    when State::Type::Game
+    when .game?
       @states[state] = Game.new
-    when State::Type::Loading
+    when .intro?
+      @states[state] = Intro.new
+    when .loading?
       @states[state] = Loading.new
-    when State::Type::Menu
+    when .menu?
       @states[state] = Menu.new
-    when State::Type::Title
+    when .title?
       @states[state] = Title.new
     else
       raise "Invalid State::Type value: #{state}"

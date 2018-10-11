@@ -12,6 +12,7 @@ class Game < State
     @carrier_cb = TimeCallback.new
     @fighter_cb = TimeCallback.new
     @meteor_cb = TimeCallback.new
+    @music_cb = TimeCallback.new
 
     @carrier_cb.add(SF.seconds(14)) do
       carrier = EnemyCarrier.new
@@ -37,8 +38,16 @@ class Game < State
       @world.add(meteor)
     end
 
+    @music_cb.add(SF.seconds(1),1) do
+      Audio.instance.play_music(
+        Music::LEVEL_1, 
+        App.config["Volume", Float32]
+      )
+    end
+
     @hud = HUD.new
     @hud.position = {App.window.size.x * 0.01, App.window.size.y * 0.01}
+    @intro_finished = false
   end
 
   def draw(target : SF::RenderTarget)
@@ -59,9 +68,15 @@ class Game < State
   end
 
   def update(dt : SF::Time) : Nil
-    @carrier_cb.update(dt)
-    @fighter_cb.update(dt)
-    @meteor_cb.update(dt)
+    if @intro_finished
+      @carrier_cb.update(dt)
+      @fighter_cb.update(dt)
+      @meteor_cb.update(dt)
+      @music_cb.update(dt)
+    elsif App.manager.state == State::Type::Game
+      @intro_finished = true
+    end
+
     @world.update(dt)
     @hud.update
   end
@@ -79,6 +94,7 @@ class Game < State
   end
 
   def on_load
+    App.manager.push(State::Type::Intro)
     puts "Loaded: #{self}"
   end
 

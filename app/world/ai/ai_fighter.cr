@@ -1,7 +1,7 @@
 require "./ai"
 
 class AIFighter < AI
-  MAX_HEIGHT = 0.35
+  MAX_HEIGHT = 0.4
 
   def initialize(unit : Unit)
     @unit = WeakRef(Unit).new(unit)
@@ -10,7 +10,7 @@ class AIFighter < AI
 
     @scale_cb.add(SF.seconds(1.0 / 60.0), 20) do
       if u = unit
-        u.set_scale(u.scale.x - 0.5 / 20, u.scale.y + 0.05)
+        u.set_scale(u.scale.x - 0.5 / 20, u.scale.y + 0.5 / 20)
       end
     end
 

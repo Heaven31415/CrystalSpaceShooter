@@ -27,7 +27,7 @@ class Meteor < Unit
     end
 
     template = UnitTemplate.new(
-      type: Unit::Type::EnemyWeapon,
+      type: Unit::Type::Environment,
       acceleration: SF.vector2f(200.0, 200.0),
       max_velocity: SF.vector2f(200.0, 200.0),
       max_health: 1,

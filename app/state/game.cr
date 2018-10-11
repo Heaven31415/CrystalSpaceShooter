@@ -12,9 +12,10 @@ class Game < State
     @carrier_cb = TimeCallback.new
     @fighter_cb = TimeCallback.new
     @meteor_cb = TimeCallback.new
+    @meteor_storm_cb = TimeCallback.new
     @music_cb = TimeCallback.new
 
-    @carrier_cb.add(SF.seconds(14)) do
+    @carrier_cb.add(SF.seconds(10)) do
       carrier = EnemyCarrier.new
       x = App.render_size.x * rand.to_f32
       y = -(100f32 + 100f32 * rand.to_f32)
@@ -22,7 +23,7 @@ class Game < State
       @world.add(carrier)
     end
 
-    @fighter_cb.add(SF.seconds(2)) do
+    @fighter_cb.add(SF.seconds(1)) do
       fighter = EnemyFighter.new
       x = App.render_size.x * rand.to_f32
       y = -(100f32 + 100f32 * rand.to_f32)
@@ -30,12 +31,37 @@ class Game < State
       @world.add(fighter)
     end
 
-    @meteor_cb.add(SF.seconds(5)) do
+    @meteor_cb.add(SF.seconds(3)) do
       meteor = Meteor.new(Meteor::Type.new(rand(0..3)))
       x = App.render_size.x * rand.to_f32
       y = -(100f32 + 100f32 * rand.to_f32)
       meteor.position = {x, y}
       @world.add(meteor)
+    end
+
+    @meteor_storm_cb.add(SF.seconds(10)) do
+      x = App.render_size.x * rand.to_f32
+      y = -(500f32 + 100f32 * rand.to_f32)
+
+      30.times do
+        meteor = Meteor.new(Meteor::Type.new(rand(0..3)))
+        meteor.position = {x, y}
+        meteor.max_velocity *= 3.0
+        @world.add(meteor)
+
+        case rand(0..3)
+        when 0
+          x += rand(50.0..75.0)
+        when 1
+          x -= rand(50.0..75.0)
+        when 2
+          y += rand(75.0..100.0)
+        when 3
+          y -= rand(75.0..100.0)
+        end
+      end
+
+      App.audio.play_sound(Sounds::WARNING_METEOR_STORM)
     end
 
     @music_cb.add(SF.seconds(1),1) do
@@ -72,6 +98,7 @@ class Game < State
       @carrier_cb.update(dt)
       @fighter_cb.update(dt)
       @meteor_cb.update(dt)
+      @meteor_storm_cb.update(dt)
       @music_cb.update(dt)
     elsif App.manager.state == State::Type::Game
       @intro_finished = true

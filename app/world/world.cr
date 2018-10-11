@@ -8,6 +8,7 @@ class World
     @enemy_weapons = [] of Unit
     @player_weapons = [] of Unit
     @enemies = [] of Unit
+    @environment = [] of Unit
 
     App.player.position = {App.render_size.x * 0.5f32, App.render_size.y * 0.75f32}
   end
@@ -20,6 +21,8 @@ class World
       @player_weapons << unit
     when .enemy?
       @enemies << unit
+    when .environment?
+      @environment << unit
     else
       raise "Unsupported Unit::Type value: `#{unit.type}`"
     end
@@ -33,6 +36,8 @@ class World
       @player_weapons
     when .enemy?
       @enemies
+    when .environment?
+      @environment
     else
       raise "Unsupported Unit::Type value: `#{type}`"
     end
@@ -43,10 +48,17 @@ class World
     @enemy_weapons.each { |u| target.draw(u) }
     @player_weapons.each { |u| target.draw(u) }
     @enemies.each { |u| target.draw(u) }
+    @environment.each { |u| target.draw(u) }
     target.draw(App.player) if App.player.alive
   end
 
   def update(dt : SF::Time) : Nil
+    @environment.each do |u|
+      if u.alive && u.position_top >= App.render_size.y
+        u.kill
+      end
+    end
+
     @enemies.each do |u|
       if u.alive && u.position_top >= App.render_size.y
         u.kill
@@ -65,11 +77,13 @@ class World
       end
     end
 
+    @environment.select! { |u| u.alive }
     @enemies.select! { |u| u.alive }
     @enemy_weapons.select! { |u| u.alive }
     @player_weapons.select! { |u| u.alive }
 
     @background.update(dt)
+    @environment.each { |u| u.update(dt) }
     @enemies.each { |u| u.update(dt) }
     @enemy_weapons.each { |u| u.update(dt) }
     @player_weapons.each { |u| u.update(dt) }
@@ -79,7 +93,7 @@ class World
   end
 
   def collision
-    units = @enemies + @enemy_weapons + @player_weapons + [App.player]
+    units = @environment + @enemies + @enemy_weapons + @player_weapons + [App.player]
 
     i, size = 0, units.size - 1
     while i <= size

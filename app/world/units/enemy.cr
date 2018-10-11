@@ -8,7 +8,7 @@ class EnemyFighter < Unit
     template = UnitTemplate.new(
       type: Unit::Type::Enemy,
       acceleration: SF.vector2f(150.0, 200.0),
-      max_velocity: SF.vector2f(150.0, 300.0),
+      max_velocity: SF.vector2f(200.0, 400.0),
       max_health: 1,
       texture: App.resources[Textures::ENEMY_FIGHTER]
     )
@@ -30,7 +30,7 @@ class EnemyFighter < Unit
   end
 
   def fire_laser : Nil
-    if @children.size < 5
+    if @children.size < 10
       laser = Laser.new(WeaponType::Enemy, 1)
       laser.position = self.position
       laser.set_scale(self.scale.x * 0.8f32, self.scale.y * 0.8f32)

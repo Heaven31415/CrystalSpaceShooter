@@ -35,6 +35,7 @@ class Unit < SF::Sprite
     PlayerWeapon
     Enemy
     Player
+    Environment
   end
 
   getter type, alive, acceleration, health, max_health, children
@@ -122,15 +123,77 @@ class Unit < SF::Sprite
   def on_death : Nil
   end
 
+  # TODO: Simplify this in the nearest future.
   def hostile?(other : self) : Bool
     case @type
-    when Type::Player, Type::PlayerWeapon
-      (Type::Enemy | Type::EnemyWeapon).includes? other.type
-    when Type::Enemy, Type::EnemyWeapon
-      (Type::Player | Type::PlayerWeapon).includes? other.type
-    else
-      false
+    when Type::Player
+      case other.type
+      when Type::Player
+        return false
+      when Type::PlayerWeapon
+        return false
+      when Type::Enemy
+        return true
+      when Type::EnemyWeapon
+        return true
+      when Type::Environment
+        return true
+      end
+    when Type::PlayerWeapon
+      case other.type
+      when Type::Player
+        return false
+      when Type::PlayerWeapon
+        return false
+      when Type::Enemy
+        return true
+      when Type::EnemyWeapon
+        return true
+      when Type::Environment
+        return true
+      end
+    when Type::Enemy
+      case other.type
+      when Type::Player
+        return true
+      when Type::PlayerWeapon
+        return true
+      when Type::Enemy
+        return false
+      when Type::EnemyWeapon
+        return false
+      when Type::Environment
+        return true
+      end
+    when Type::EnemyWeapon
+      case other.type
+      when Type::Player
+        return true
+      when Type::PlayerWeapon
+        return true
+      when Type::Enemy
+        return false
+      when Type::EnemyWeapon
+        return false
+      when Type::Environment
+        return true
+      end
+    when Type::Environment
+      case other.type
+      when Type::Player
+        return true
+      when Type::PlayerWeapon
+        return true
+      when Type::Enemy
+        return true
+      when Type::EnemyWeapon
+        return true
+      when Type::Environment
+        return false
+      end
     end
+
+    return false
   end
 
   def close?(other : self)

@@ -32,10 +32,9 @@ class Unit < SF::Sprite
   enum Type
     Background
     EnemyWeapon
-    Enemy
     PlayerWeapon
+    Enemy
     Player
-    Special
   end
 
   getter type, alive, acceleration, health, max_health, children

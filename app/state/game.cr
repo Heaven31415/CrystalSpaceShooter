@@ -8,10 +8,6 @@ class Game < State
   def initialize
     @world = World.new
 
-    player = App.player
-    player.position = {App.window.size.x * 0.5f32, App.window.size.y * 0.75f32}
-    @world.add(player)
-
     @carrier_cb = TimeCallback.new
     @fighter_cb = TimeCallback.new
     @meteor_cb = TimeCallback.new

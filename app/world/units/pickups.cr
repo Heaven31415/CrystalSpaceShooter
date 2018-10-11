@@ -38,7 +38,7 @@ class PickupKnock < Pickup
 
   def on_collision(other : Unit) : Nil
     if other.type == Unit::Type::Player
-      enemies = world.get(->(unit : Unit) { unit.type == Unit::Type::Enemy })
+      enemies = world.get(Unit::Type::Enemy)
       enemies.each do |enemy|
         # todo: check whether it works!
         if enemy.velocity.y > 0f32

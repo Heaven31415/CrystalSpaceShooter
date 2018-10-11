@@ -22,25 +22,45 @@ sounds_enum   = "Sounds"
 textures_path = "resources/textures"
 textures_enum = "Textures"
 
-packed_fonts = PackedResources(SF::Font).from_directory(fonts_path, true)
-packed_fonts.save("data/fonts.data")
-packed_fonts.build_enum("data/fonts.cr", fonts_enum)
+begin
+  fonts = PackedResources(SF::Font).from_directory(fonts_path, erase_extensions: true)
+  fonts.save("data/fonts.data")
+  fonts.build_enum("data/fonts.cr", fonts_enum)
+rescue ex : Exception
+  puts ex.message
+end
 
-packed_music = PackedResources(SF::Music).from_directory(music_path, true)
-packed_music.save("data/music.data")
-packed_music.build_enum("data/music.cr", music_enum)
+begin
+  music = PackedResources(SF::Music).from_directory(music_path, erase_extensions: true)
+  music.save("data/music.data")
+  music.build_enum("data/music.cr", music_enum)
+rescue ex : Exception
+  puts ex.message
+end
 
-packed_shaders = PackedResources(SF::Shader).from_directory(shaders_path, false)
-packed_shaders.save("data/shaders.data")
-packed_shaders.build_enum("data/shaders.cr", shaders_enum)
+begin
+  shaders = PackedResources(SF::Shader).from_directory(shaders_path, erase_extensions: false)
+  shaders.save("data/shaders.data")
+  shaders.build_enum("data/shaders.cr", shaders_enum)
+rescue ex : Exception
+  puts ex.message
+end
 
-packed_sounds = PackedResources(SF::SoundBuffer).from_directory(sounds_path, true)
-packed_sounds.save("data/sounds.data")
-packed_sounds.build_enum("data/sounds.cr", sounds_enum)
+begin
+  sounds = PackedResources(SF::SoundBuffer).from_directory(sounds_path, erase_extensions: true)
+  sounds.save("data/sounds.data")
+  sounds.build_enum("data/sounds.cr", sounds_enum)
+rescue ex : Exception
+  puts ex.message
+end
 
-packed_textures = PackedResources(SF::Texture).from_directory(textures_path, true)
-packed_textures.save("data/textures.data")
-packed_textures.build_enum("data/textures.cr", textures_enum)
+begin
+  textures = PackedResources(SF::Texture).from_directory(textures_path, erase_extensions: true)
+  textures.save("data/textures.data")
+  textures.build_enum("data/textures.cr", textures_enum)
+rescue ex : Exception
+  puts ex.message
+end
 
 
 

@@ -1,6 +1,7 @@
 require "./state"
 require "./manager"
 require "../world/units/*"
+require "../gui/hud"
 
 class Game < State
   getter world
@@ -35,10 +36,14 @@ class Game < State
       meteor.position = {x, y}
       @world.add(meteor)
     end
+
+    @hud = HUD.new
+    @hud.position = {App.window.size.x * 0.01, App.window.size.y * 0.01}
   end
 
   def draw(target : SF::RenderTarget)
     target.draw(@world)
+    target.draw(@hud)
   end
 
   def handle_input(event : SF::Event)
@@ -58,6 +63,7 @@ class Game < State
     @fighter_cb.update(dt)
     @meteor_cb.update(dt)
     @world.update(dt)
+    @hud.update
   end
 
   def isolate_drawing : Bool

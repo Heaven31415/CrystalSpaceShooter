@@ -39,7 +39,7 @@ class Player < Unit
     end
   end
 
-  def handle_input(event : SF::Event)
+  def handle_input(event : SF::Event) : Nil
     case event
     when SF::Event::KeyPressed
       case event.code
@@ -65,7 +65,7 @@ class Player < Unit
     end
   end
 
-  def update(dt)
+  def update(dt : SF::Time) : Nil
     if position_left < 0.0
       @velocity.x = @velocity.x.abs * 0.5
       move(@max_velocity.x * dt.as_seconds, 0)
@@ -98,27 +98,37 @@ class Player < Unit
     @jump_timer.update(dt)
   end
 
-  def on_collision(other)
+  def on_collision(other : Unit) : Nil
     other.damage(1)
   end
 
-  def health_percent
-    100_f32 * @health.to_f32 / @max_health.to_f32
+  def health_percent : Float32
+    100f32 * @health.to_f32 / @max_health.to_f32
   end
 
-  private def fire_laser
+  private def fire_laser : Nil
+    beams = @children.select do |child|
+      child.scale.x == 0.5f32
+    end
+
+    beams_count = beams.size
+    missiles_count = @children.size - beams.size
+
     case @weapon_mode
     when WeaponMode::Missile
-      if @children.size < 5
+      if missiles_count < 5
         laser = Laser.new(WeaponType::Player, 5)
         laser.position = self.position
-        laser.scale = {1.25f32, 1.0f32}
+        laser.scale = {1.15f32, 0.9f32}
+
+        App.audio.play_sound(Sounds::LASER1, 45, 0.5)
+        App.audio.play_sound(Sounds::LASER2, 20, 1.5)
 
         add_child(laser)
         world.add(laser)
       end
     when WeaponMode::Beam
-      if @children.size < 49
+      if beams_count < 50
         left_laser = Laser.new(WeaponType::Player, 1)
         right_laser = Laser.new(WeaponType::Player, 1)
 
@@ -126,6 +136,9 @@ class Player < Unit
         right_laser.position = self.position + {10f32, 0f32}
         add_child(left_laser)
         add_child(right_laser)
+
+        App.audio.play_sound(Sounds::PEP_SOUND4, 20, 1.3)
+        App.audio.play_sound(Sounds::PEP_SOUND4, 20, 0.9)
 
         world.add(left_laser)
         world.add(right_laser)

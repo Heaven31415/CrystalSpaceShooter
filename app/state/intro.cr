@@ -26,6 +26,14 @@ class Intro < State
   end
 
   def handle_input(event : SF::Event)
+    case event
+    when SF::Event::Closed
+      App.window.close
+    when SF::Event::KeyPressed
+      if event.code == SF::Keyboard::Escape
+        App.manager.push(State::Type::Menu)
+      end
+    end
   end
 
   def update(dt : SF::Time)

@@ -78,7 +78,7 @@ class Game < State
     end
 
     @world.update(dt)
-    @hud.update
+    @hud.update(dt)
   end
 
   def isolate_drawing : Bool
@@ -94,7 +94,7 @@ class Game < State
   end
 
   def on_load
-    App.manager.push(State::Type::Intro)
+    # App.manager.push(State::Type::Intro)
     puts "Loaded: #{self}"
   end
 

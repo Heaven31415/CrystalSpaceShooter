@@ -37,7 +37,7 @@ class Audio
   end
 
   private def remove_stopped_sounds
-    @sounds.select! { |id, sound| sound.status != SF::SoundSource::Stopped }
+    @sounds.reject! { |id, sound| sound.status != SF::SoundSource::Playing }
   end
 
   def play_music(music : Music, volume : Float32 = 100f32, pitch : Float32 = 1f32, loop : Bool = true)

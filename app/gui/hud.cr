@@ -8,6 +8,12 @@ class HUD < SF::RectangleShape
     @back.outline_thickness = -3
     @health_percent = 100_f32
 
+    @warning_ready = true
+    @warning_cb = TimeCallback.new
+    @warning_cb.add(SF.seconds(5)) do
+      @warning_ready = true
+    end
+
     super(size)
     self.fill_color = SF.color(190, 60, 60, 255)
     self.outline_color = SF.color(40, 20, 20, 255)
@@ -24,8 +30,15 @@ class HUD < SF::RectangleShape
     super
   end
 
-  def update
+  def update(dt : SF::Time) : Nil
+    old_health = @health_percent
     @health_percent = App.player.health_percent
     self.size = {@health_percent * @back.size.x / 100.0, @back.size.y}
+
+    if @warning_ready && @health_percent < 50f32 && old_health > 50f32
+      App.audio.play_sound(Sounds::WARNING50HP)
+      @warning_ready = false
+    end
+    @warning_cb.update(dt)
   end
 end

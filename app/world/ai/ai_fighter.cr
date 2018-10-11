@@ -29,7 +29,7 @@ class AIFighter < AI
 
   def update(dt : SF::Time)
     if u = @unit.value
-      if u.position_bottom > App.window.size.y * MAX_HEIGHT
+      if u.position_bottom > App.render_size.y * MAX_HEIGHT
         @scale_cb.update(dt)
       else
         if App.player.position.x > u.position.x

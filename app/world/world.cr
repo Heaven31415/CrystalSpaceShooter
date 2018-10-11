@@ -9,7 +9,7 @@ class World
     @player_weapons = [] of Unit
     @enemies = [] of Unit
 
-    App.player.position = {App.window.size.x * 0.5f32, App.window.size.y * 0.75f32}
+    App.player.position = {App.render_size.x * 0.5f32, App.render_size.y * 0.75f32}
   end
 
   def add(unit : Unit) : Nil
@@ -48,13 +48,13 @@ class World
 
   def update(dt : SF::Time) : Nil
     @enemies.each do |u|
-      if u.alive && u.position_top >= App.window.size.y
+      if u.alive && u.position_top >= App.render_size.y
         u.kill
       end
     end
 
     @enemy_weapons.each do |u|
-      if u.alive && u.position_top >= App.window.size.y
+      if u.alive && u.position_top >= App.render_size.y
         u.kill
       end
     end

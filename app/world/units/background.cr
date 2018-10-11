@@ -12,7 +12,7 @@ class Background < Unit
       max_velocity: App.config["BackgroundVelocity", SF::Vector2f],
       max_health: 1,
       texture: texture,
-      texture_rect: SF.int_rect(0, 0, App.window.size.x, App.window.size.y)
+      texture_rect: SF.int_rect(0, 0, App.render_size.x, App.render_size.y)
     )
 
     super(template)
@@ -22,15 +22,15 @@ class Background < Unit
     @extra = Unit.new(template)
     @extra.default_transform
     @extra.velocity = App.config["BackgroundVelocity", SF::Vector2f]
-    @extra.move(0.0, -App.window.size.y)
+    @extra.move(0.0, -App.render_size.y)
   end
 
   def update(dt : SF::Time) : Nil
     @extra.update(dt)
     super
 
-    move(0.0, -2 * App.window.size.y) if position.y > App.window.size.y
-    @extra.move(0.0, -2 * App.window.size.y) if @extra.position.y > App.window.size.y
+    move(0.0, -2 * App.render_size.y) if position.y > App.render_size.y
+    @extra.move(0.0, -2 * App.render_size.y) if @extra.position.y > App.render_size.y
   end
 
   def draw(target : SF::RenderTarget, states : SF::RenderStates) : Nil

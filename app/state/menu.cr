@@ -10,7 +10,7 @@ class Menu < State
   def initialize
     @cursor = Cursor.new
 
-    size = App.window.size
+    size = App.render_size
 
     w = size.x * 0.18
     h = size.y * 0.18

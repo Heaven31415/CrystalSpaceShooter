@@ -16,7 +16,7 @@ class Game < State
 
     @carrier_cb.add(SF.seconds(14)) do
       carrier = EnemyCarrier.new
-      x = App.window.size.x * rand.to_f32
+      x = App.render_size.x * rand.to_f32
       y = -(100f32 + 100f32 * rand.to_f32)
       carrier.position = {x, y}
       @world.add(carrier)
@@ -24,7 +24,7 @@ class Game < State
 
     @fighter_cb.add(SF.seconds(2)) do
       fighter = EnemyFighter.new
-      x = App.window.size.x * rand.to_f32
+      x = App.render_size.x * rand.to_f32
       y = -(100f32 + 100f32 * rand.to_f32)
       fighter.position = {x, y}
       @world.add(fighter)
@@ -32,7 +32,7 @@ class Game < State
 
     @meteor_cb.add(SF.seconds(5)) do
       meteor = Meteor.new(Meteor::Type.new(rand(0..3)))
-      x = App.window.size.x * rand.to_f32
+      x = App.render_size.x * rand.to_f32
       y = -(100f32 + 100f32 * rand.to_f32)
       meteor.position = {x, y}
       @world.add(meteor)
@@ -46,7 +46,7 @@ class Game < State
     end
 
     @hud = HUD.new
-    @hud.position = {App.window.size.x * 0.01, App.window.size.y * 0.01}
+    @hud.position = {App.render_size.x * 0.01, App.render_size.y * 0.01}
     @intro_finished = false
   end
 

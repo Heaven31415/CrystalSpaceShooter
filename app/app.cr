@@ -6,6 +6,16 @@ require "./state/cache"
 require "./state/manager"
 
 class App
+  @@fullscreen : Bool = Config.instance["Fullscreen", Bool]
+
+  def self.fullscreen=(value : Bool) : Nil
+    @@fullscreen = value
+  end
+
+  def self.fullscreen : Bool
+    @@fullscreen
+  end
+
   def self.audio : Audio
     Audio.instance
   end
@@ -16,6 +26,10 @@ class App
 
   def self.resources : Resources
     Resources.instance
+  end
+
+  def self.render_size : SF::Vector2u
+    SF::Vector2u.new(Config.instance["RenderWidth", Int32], Config.instance["RenderHeight", Int32])
   end
   
   def self.window : SF::RenderWindow

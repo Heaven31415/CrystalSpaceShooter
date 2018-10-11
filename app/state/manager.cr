@@ -18,6 +18,10 @@ class Manager
     @time_per_frame = SF.seconds(1.0 / App.config["Fps", Float32])
     @clock = SF::Clock.new
     @dt = SF::Time.new
+
+    w = App.config["RenderWidth", Int32]
+    h = App.config["RenderHeight", Int32]
+    @texture = SF::RenderTexture.new(w, h)
   end
 
   def state : State::Type?
@@ -69,10 +73,12 @@ class Manager
     process_requests
     @clock.restart
 
-    while App.window.open? && @states.size != 0
+    window = App.window
+
+    while window.open? && @states.size != 0
       @dt += @clock.restart
       while @dt >= @time_per_frame
-        while event = App.window.poll_event
+        while event = window.poll_event
           handle_input(event)
         end
 
@@ -82,7 +88,17 @@ class Manager
         @dt -= @time_per_frame
       end
 
-      render(App.window)
+      render(@texture)
+
+      w = window.size.x / App.config["RenderWidth", Int32].to_f32
+      h = window.size.y / App.config["RenderHeight", Int32].to_f32
+      scale = {w, h}
+
+      window.clear
+      sprite = SF::Sprite.new(@texture.texture)
+      sprite.scale = scale
+      window.draw(sprite)
+      window.display
     end
   end
 
@@ -115,6 +131,14 @@ class Manager
   end
 
   private def handle_input(event : SF::Event)
+    # special-case
+    if event.is_a? SF::Event::KeyPressed
+      if event.code == SF::Keyboard::Return && event.alt
+        App.fullscreen = !App.fullscreen
+        Window.recreate
+      end
+    end
+
     isolation_index = nil
     i = @states.size - 1
     while i >= 0

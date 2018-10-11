@@ -24,7 +24,7 @@ class AIInterceptor < AI
 
       if u.position_top < 0.0
         u.accelerate(Direction::Down, dt)
-      elsif u.position_bottom > App.window.size.y * MAX_HEIGHT
+      elsif u.position_bottom > App.render_size.y * MAX_HEIGHT
         u.accelerate(Direction::Up, dt)
       end
 

@@ -25,7 +25,7 @@ class AICarrier < AI
 
       if u.position_top < 0.0
         u.accelerate(Direction::Down, dt)
-      elsif u.position_bottom > App.window.size.y / 5.0
+      elsif u.position_bottom > App.render_size.y / 5.0
         u.accelerate(Direction::Up, dt)
       end
 

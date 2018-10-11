@@ -12,15 +12,16 @@ class Meteor < Unit
   end
 
   def initialize(@meteor_type : Type)
+    index = Textures::METEOR_BIG1.value
     case @meteor_type
     when Type::Big
-      texture = App.resources[Textures.new(Random.rand(8..11))]
+      texture = App.resources[Textures.new(Random.rand(index..index+3))]
     when Type::Medium
-      texture = App.resources[Textures.new(Random.rand(12..13))]
+      texture = App.resources[Textures.new(Random.rand(index+1..index+2))]
     when Type::Small
-      texture = App.resources[Textures.new(Random.rand(14..15))]
+      texture = App.resources[Textures.new(Random.rand(index+3..index+4))]
     when Type::Tiny
-      texture = App.resources[Textures.new(Random.rand(16..17))]
+      texture = App.resources[Textures.new(Random.rand(index+5..index+6))]
     else
       raise "Invalid Meteor::Type value: #{meteor_type}"
     end

@@ -4,3 +4,5 @@ An experiment to develop a Space Shooter game using the Crystal programming lang
 ### Gameplay
 ![alt tag](image.png)
 
+![alt tag](gameplay.gif)
+

@@ -73,9 +73,10 @@ end
 
 class EnemyInterceptor < Unit
   SCALE = 0.17
-  @ai : AI?
+  property ai : AI?
+  getter carrier
 
-  def initialize
+  def initialize(@carrier : Unit)
     template = UnitTemplate.new(
       type: Unit::Type::Enemy,
       acceleration: SF.vector2f(100.0, 100.0),

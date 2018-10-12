@@ -15,7 +15,7 @@ class Game < State
     @meteor_storm_cb = TimeCallback.new
     @music_cb = TimeCallback.new
 
-    @carrier_cb.add(SF.seconds(10)) do
+    @carrier_cb.add(SF.seconds(5)) do
       carrier = EnemyCarrier.new
       x = App.render_size.x * rand.to_f32
       y = -(100f32 + 100f32 * rand.to_f32)
@@ -96,9 +96,9 @@ class Game < State
   def update(dt : SF::Time) : Nil
     if @intro_finished
       @carrier_cb.update(dt)
-      @fighter_cb.update(dt)
-      @meteor_cb.update(dt)
-      @meteor_storm_cb.update(dt)
+      # @fighter_cb.update(dt)
+      # @meteor_cb.update(dt)
+      # @meteor_storm_cb.update(dt)
       @music_cb.update(dt)
     elsif App.manager.state == State::Type::Game
       @intro_finished = true

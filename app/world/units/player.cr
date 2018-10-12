@@ -121,8 +121,8 @@ class Player < Unit
         laser.position = self.position
         laser.scale = {1.15f32, 0.9f32}
 
-        App.audio.play_sound(Sounds::LASER1, 45, 0.5)
-        App.audio.play_sound(Sounds::LASER2, 20, 1.5)
+        App.audio.play_sound(Sounds::LASER1, 100, 0.5)
+        App.audio.play_sound(Sounds::LASER2, 80, 1.5)
 
         add_child(laser)
         world.add(laser)
@@ -137,8 +137,8 @@ class Player < Unit
         add_child(left_laser)
         add_child(right_laser)
 
-        App.audio.play_sound(Sounds::PEP_SOUND4, 20, 1.3)
-        App.audio.play_sound(Sounds::PEP_SOUND4, 20, 0.9)
+        App.audio.play_sound(Sounds::PEP_SOUND4, 80, 1.3)
+        App.audio.play_sound(Sounds::PEP_SOUND4, 80, 0.9)
 
         world.add(left_laser)
         world.add(right_laser)

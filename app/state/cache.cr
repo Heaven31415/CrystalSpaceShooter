@@ -5,6 +5,7 @@ require "./loading"
 require "./menu"
 require "./state"
 require "./title"
+require "./warning"
 
 class Cache
   @@instance : Cache?
@@ -43,6 +44,8 @@ class Cache
       @states[state] = Menu.new
     when .title?
       @states[state] = Title.new
+    when .warning?
+      @states[state] = Warning.new
     else
       raise "Invalid State::Type value: #{state}"
     end

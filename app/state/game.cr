@@ -96,9 +96,9 @@ class Game < State
   def update(dt : SF::Time) : Nil
     if @intro_finished
       @carrier_cb.update(dt)
-      # @fighter_cb.update(dt)
-      # @meteor_cb.update(dt)
-      # @meteor_storm_cb.update(dt)
+      @fighter_cb.update(dt)
+      @meteor_cb.update(dt)
+      @meteor_storm_cb.update(dt)
       @music_cb.update(dt)
     elsif App.manager.state == State::Type::Game
       @intro_finished = true

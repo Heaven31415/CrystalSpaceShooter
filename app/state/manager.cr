@@ -40,6 +40,8 @@ class Manager
         State::Type::Menu
       when Title
         State::Type::Title
+      when Warning
+        State::Type::Warning
       else
         nil
       end

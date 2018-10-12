@@ -8,6 +8,7 @@ abstract class State
     Loading
     Menu
     Title
+    Warning
   end
 
   abstract def initialize

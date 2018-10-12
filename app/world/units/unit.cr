@@ -92,7 +92,7 @@ class Unit < SF::Sprite
     when .left?
       @velocity.x -= @acceleration.x * dt.as_seconds
     else
-      raise "Invalid Direction value: #{direction}"
+      raise "Invalid Direction value: `#{direction}`"
     end
   end
 

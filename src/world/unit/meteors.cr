@@ -1,7 +1,6 @@
 require "../../common/utilities"
 require "../world"
 require "../unit"
-require "./weapons"
 
 class Meteor < Unit
   enum Type

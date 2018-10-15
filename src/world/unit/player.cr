@@ -1,4 +1,3 @@
-require "./weapons"
 require "../world"
 require "../unit"
 require "../../common/time_callback"

@@ -113,13 +113,18 @@ class Player < Unit
 
   def update(dt : SF::Time) : Nil
     if position_left < 0f32
-      @velocity.x = @velocity.x.abs * 0.5f32
+      @velocity.x = -@velocity.x * 0.5f32
       move(@max_velocity.x * dt.as_seconds, 0f32)
     elsif position_right > Game::WORLD_WIDTH
-      @velocity.x = -@velocity.x.abs * 0.5f32
+      @velocity.x = -@velocity.x * 0.5f32
       move(-@max_velocity.x * dt.as_seconds, 0f32)
-    elsif position_bottom > Game::WORLD_HEIGHT
-      @velocity.y = -@velocity.y.abs * 0.5f32
+    end
+
+    if position_top < Game::WORLD_HEIGHT * 0.1f32
+      @velocity.y = -@velocity.y * 0.5f32
+      move(0, @max_velocity.y * dt.as_seconds)
+    elsif position_bottom > Game::WORLD_HEIGHT * 0.9f32
+      @velocity.y = -@velocity.y * 0.5f32
       move(0, -@max_velocity.y * dt.as_seconds)
     end
 
@@ -135,16 +140,18 @@ class Player < Unit
       accelerate(Direction::Down, dt)
     end
 
-    if position_top < Game::WORLD_HEIGHT * 0.4f32
-      @velocity.y += 5f32 * @acceleration.y * dt.as_seconds
-    end
-
     super
     @jump_callback.update(dt)
   end
 
   def on_collision(other : Unit) : Nil
     other.damage(1)
+
+    if other.type == Unit::Type::Enemy || other.type == Unit::Type::Environment
+      Game.audio.play_sound(Resource::Sound::ZAP_THREE_TONE_DOWN, 1000f32, 0.6f32)
+    else
+      Game.audio.play_sound(Resource::Sound::ZAP1, 50f32, 0.6f32)
+    end
   end
 
   def health_percent : Float32

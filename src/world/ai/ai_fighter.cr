@@ -7,6 +7,7 @@ class AIFighter < AI
     @unit = WeakRef(Unit).new(unit)
     @scale_callback = TimeCallback.new
     @shoot_callback = TimeCallback.new
+    @play_teleport_sound = true
 
     @scale_callback.add(SF.seconds(1.0 / 60.0), 20) do
       if u = unit
@@ -30,6 +31,10 @@ class AIFighter < AI
   def on_update(dt : SF::Time) : Nil
     if u = @unit.value
       if u.position_bottom > Game::WORLD_HEIGHT * MAX_HEIGHT
+        if @play_teleport_sound
+          Game.audio.play_sound(Resource::Sound::PHASE_JUMP3, 80f32, 0.5f32)
+          @play_teleport_sound = false
+        end
         @scale_callback.update(dt)
       else
         if Game.player.position.x > u.position.x

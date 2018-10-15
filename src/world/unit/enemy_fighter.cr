@@ -56,6 +56,7 @@ class EnemyFighter < Unit
       laser.position = self.position
       add_child(laser)
       world.add(laser)
+      Game.audio.play_sound(Resource::Sound::PHASER_UP1, 40f32, 0.4f32)
     end
   end
 end

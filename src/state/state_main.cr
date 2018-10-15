@@ -95,8 +95,8 @@ class Main < State
 
   def update(dt : SF::Time) : Nil
     if @intro_finished
-      @carrier_callback.update(dt)
-      # @fighter_callback.update(dt)
+      # @carrier_callback.update(dt)
+      @fighter_callback.update(dt)
       # @meteor_callback.update(dt)
       # @meteor_storm_callback.update(dt)
       @music_callback.update(dt)

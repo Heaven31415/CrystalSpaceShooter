@@ -15,17 +15,62 @@ class Player < Unit
     @@instance ||= create
   end
 
-  enum WeaponMode
-    Missile,
-    Beam
+  enum WeaponType
+    SingleShot
+    DoubleShot
+  end
+
+  class Laser < Unit
+    getter weapon_type : WeaponType
+    getter damage : Int32
+
+    def initialize(@weapon_type)
+      case @weapon_type
+      when WeaponType::SingleShot
+        @damage = 4
+        template = UnitTemplate.new(
+          type: Unit::Type::PlayerWeapon,
+          max_health: 1,
+          max_velocity: SF.vector2f(0.0, 600.0),
+          acceleration: SF.vector2f(0.0, 800.0),
+          texture: Game.resources[Resource::Texture::LASER_RED],
+          texture_rect: nil,
+          scale: SF.vector2f(0.95, 0.75)
+        )
+      when WeaponType::DoubleShot
+        @damage = 1
+        template = UnitTemplate.new(
+          type: Unit::Type::PlayerWeapon,
+          max_health: 1,
+          max_velocity: SF.vector2f(0.0, 600.0),
+          acceleration: SF.vector2f(0.0, 800.0),
+          texture: Game.resources[Resource::Texture::LASER_RED],
+          texture_rect: nil,
+          scale: SF.vector2f(0.5, 0.5)
+        )
+      else
+        raise "Invalid WeaponType value: '#{@weapon_type}'"
+      end
+
+      super(template)
+    end
+
+    def update(dt : SF::Time) : Nil
+      accelerate(Direction::Up, dt)
+      super
+    end
+  
+    def on_collision(other : Unit) : Nil
+      other.damage(@damage)
+    end 
   end
 
   def initialize
     template = UnitTemplate.new(
       type: Unit::Type::Player,
       max_health: 25,
-      max_velocity: SF.vector2f(300.0, 150.0),
-      acceleration: SF.vector2f(200.0, 250.0),
+      max_velocity: SF.vector2f(200.0, 150.0),
+      acceleration: SF.vector2f(200.0, 100.0),
       texture: Game.resources[Resource::Texture::PLAYER],
       texture_rect: nil,
       scale: SF.vector2f(0.5, 0.5)
@@ -33,8 +78,7 @@ class Player < Unit
     
     super(template)
 
-    @weapon_mode = WeaponMode::Missile
-
+    @weapon_mode = WeaponType::SingleShot
     @jump_ready = false
     @jump_callback = TimeCallback.new
     @jump_callback.add(SF.seconds(1f32)) do
@@ -47,17 +91,17 @@ class Player < Unit
     when SF::Event::KeyPressed
       case event.code
       when SF::Keyboard::Space
-        fire_laser
+        fire_weapon
       when SF::Keyboard::Q
         if @jump_ready
           @velocity.x = -@max_velocity.x
           @jump_ready = false
         end
       when SF::Keyboard::W
-        if @weapon_mode == WeaponMode::Missile
-          @weapon_mode = WeaponMode::Beam
+        if @weapon_mode == WeaponType::SingleShot
+          @weapon_mode = WeaponType::DoubleShot
         else
-          @weapon_mode = WeaponMode::Missile
+          @weapon_mode = WeaponType::SingleShot
         end
       when SF::Keyboard::E
         if @jump_ready
@@ -92,11 +136,9 @@ class Player < Unit
       accelerate(Direction::Down, dt)
     end
 
-    if position_top < Game::WORLD_HEIGHT / 2f32
+    if position_top < Game::WORLD_HEIGHT * 0.4f32
       @velocity.y += 5f32 * @acceleration.y * dt.as_seconds
     end
-
-    p @velocity
 
     super
     @jump_callback.update(dt)
@@ -110,23 +152,27 @@ class Player < Unit
     100f32 * @health.to_f32 / @max_health.to_f32
   end
 
-  private def fire_laser : Nil
-    beams = @children.select do |guid|
-      if child = world.get(guid)
-        child.scale.x == 0.5f32
+  private def fire_weapon : Nil
+    single_shot_count = 0
+    double_shot_count = 0
+
+    @children.each do |guid|
+      if (child = world.get(guid)) && child.is_a? Laser
+        case child.weapon_type
+        when WeaponType::SingleShot
+          single_shot_count += 1
+        when WeaponType::DoubleShot
+          double_shot_count += 1
+        end
       end
-      false
     end
 
-    beams_count = beams.size
-    missiles_count = @children.size - beams.size
-
     case @weapon_mode
-    when WeaponMode::Missile
-      if missiles_count < 5
-        laser = Laser.new(WeaponType::Player, 5)
-        laser.position = self.position
-        laser.scale = {1.15f32, 0.9f32}
+    when WeaponType::SingleShot
+      if single_shot_count < 3
+        laser = Laser.new(WeaponType::SingleShot)
+        laser.position = self.position - {0f32, 8f32}
+        laser.velocity = SF.vector2f(0f32, self.velocity.y)
 
         Game.audio.play_sound(Resource::Sound::LASER1, 100, 0.5)
         Game.audio.play_sound(Resource::Sound::LASER2, 80, 1.5)
@@ -134,21 +180,25 @@ class Player < Unit
         add_child(laser)
         world.add(laser)
       end
-    when WeaponMode::Beam
-      if beams_count < 50
-        left_laser = Laser.new(WeaponType::Player, 1)
-        right_laser = Laser.new(WeaponType::Player, 1)
+    when WeaponType::DoubleShot
+      if double_shot_count < 30
+        first = Laser.new(WeaponType::DoubleShot)
+        second = Laser.new(WeaponType::DoubleShot)
 
-        left_laser.position = self.position - {10f32, 0f32}
-        right_laser.position = self.position + {10f32, 0f32}
-        add_child(left_laser)
-        add_child(right_laser)
+        first.position = self.position - {10f32, 0f32}
+        second.position = self.position + {10f32, 0f32}
+
+        first.velocity = SF.vector2f(0f32, self.velocity.y)
+        second.velocity = SF.vector2f(0f32, self.velocity.y)
+
+        add_child(first)
+        add_child(second)
 
         Game.audio.play_sound(Resource::Sound::PEP_SOUND4, 80, 1.3)
         Game.audio.play_sound(Resource::Sound::PEP_SOUND4, 80, 0.9)
 
-        world.add(left_laser)
-        world.add(right_laser)
+        world.add(first)
+        world.add(second)
       end
     end
   end

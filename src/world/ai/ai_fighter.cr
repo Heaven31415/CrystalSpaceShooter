@@ -20,7 +20,7 @@ class AIFighter < AI
       end
     end
 
-    @shoot_callback.add(SF.seconds(rand(0.4..0.6))) do
+    @shoot_callback.add(SF.seconds(rand(0.8..1.0))) do
       if u = unit
         u.fire_laser
       end

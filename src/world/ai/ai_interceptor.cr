@@ -37,10 +37,10 @@ class AIInterceptor < AI
   def on_update(dt : SF::Time)
     # TODO: Should @unit be an EnemyInterceptor?
     if u = @unit.value.as?(EnemyInterceptor)
-      unless parent = u.world.get(u.parent)
-        u.kill
-      else
+      if (parent = u.parent) && (carrier = u.world.get(parent))
         if @unleashed
+          @laser_callback.update(dt)
+
           if @radius < @unleashed_radius
             @radius += (@unleashed_radius - @normal_radius) * dt.as_seconds
           end
@@ -51,14 +51,12 @@ class AIInterceptor < AI
         end
   
         @angle += @angular_speed * dt.as_seconds
-        position = parent.position
+        position = carrier.position
         x = position.x + Math.cos(@angle) * @radius
         y = position.y + Math.sin(@angle) * @radius
         u.position = {x, y}
-  
-        if @unleashed
-          @laser_callback.update(dt)
-        end
+      else
+        u.kill
       end
     end
   end

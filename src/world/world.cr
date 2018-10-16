@@ -32,8 +32,8 @@ class World
     end
   end
 
-  def get(guid : UInt64) : Unit?
-    @units.find { |u| u.guid == guid }
+  def get(guid : GUID) : Unit?
+    @units.find { |unit| unit.guid == guid }
   end
 
   def get(type : Unit::Type) : Array(Unit)

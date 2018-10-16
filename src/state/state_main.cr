@@ -25,7 +25,7 @@ class Main < State
       @world.add(c)
     end
 
-    @fighter_callback.add(SF.seconds(1)) do
+    @fighter_callback.add(SF.seconds(2)) do
       f = EnemyFighter.new
       x = Game::WORLD_WIDTH * r.rand(0f32..1f32)
       y = Game::WORLD_HEIGHT * r.rand(0.3f32..0.6f32)
@@ -95,10 +95,10 @@ class Main < State
 
   def update(dt : SF::Time) : Nil
     if @intro_finished
-      # @carrier_callback.update(dt)
+      @carrier_callback.update(dt)
       @fighter_callback.update(dt)
-      # @meteor_callback.update(dt)
-      # @meteor_storm_callback.update(dt)
+      @meteor_callback.update(dt)
+      @meteor_storm_callback.update(dt)
       @music_callback.update(dt)
     elsif Game.manager.state == State::Type::Main
       @intro_finished = true

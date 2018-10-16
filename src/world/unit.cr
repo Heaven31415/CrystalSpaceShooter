@@ -30,10 +30,33 @@ enum Direction
   Left
 end
 
-private class GUID
-  @@counter = 0u64
-  def self.get : UInt64
+struct GUID
+  @@counter = 0u32
+
+  @value : UInt32
+  def initialize
     @@counter += 1
+    @value = @@counter
+  end
+
+  def value : UInt32
+    @value
+  end
+
+  def <(other : self) : Bool
+    @value < other.value
+  end
+
+  def <=(other : self) : Bool
+    @value <= other.value
+  end
+
+  def to_s(io : IO) : Nil
+    io << @value
+  end
+
+  def inspect(io : IO) : Nil
+    io << @value
   end
 end
 
@@ -48,9 +71,10 @@ class Unit < SF::Sprite
     Environment
   end
 
-  getter guid : UInt64
-  property parent : UInt64
-  getter children : Array(UInt64)
+  getter guid : GUID
+  getter children : Array(GUID)
+  property parent : GUID?
+
   getter type : Unit::Type
   getter alive : Bool
   getter health : Int32
@@ -66,10 +90,10 @@ class Unit < SF::Sprite
     else
       super(template.texture, template.texture_rect)
     end
-    @guid = GUID.get
+    @guid = GUID.new
 
-    @parent = 0u64
-    @children = [] of UInt64
+    @parent = nil
+    @children = [] of GUID
     @type = template.type
     @alive = true
     @health = template.max_health
@@ -102,20 +126,22 @@ class Unit < SF::Sprite
     end
   end
 
-  def add_child(guid : UInt64) : Nil
+  def add_child(guid : GUID) : Nil
     if !@children.find { |child| child == guid }
       @children.push(guid)
     end
   end
 
+  @[AlwaysInline]
   def add_child(unit : Unit) : Nil
     add_child(unit.guid)
   end
 
-  def remove_child(guid : UInt64) : Nil
+  def remove_child(guid : GUID) : Nil
     @children.delete(guid)
   end
 
+  @[AlwaysInline]
   def remove_child(unit : Unit) : Nil
     remove_child(unit.guid)
   end

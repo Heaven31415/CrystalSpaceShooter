@@ -10,10 +10,7 @@ class Game
   # TODO: Rename 'RenderWidth' to 'WorldWidth' and 'RenderHeight' to 'WorldHeight'
   WORLD_WIDTH = Config.instance["RenderWidth", Int32]
   WORLD_HEIGHT = Config.instance["RenderHeight", Int32]
-  # TODO: Most probably I won't need this, because I can check window
-  # to tell if it's windowed or not.
-  class_property fullscreen : Bool = Config.instance["Fullscreen", Bool]
-
+  
   def self.audio : Audio
     Audio.instance
   end

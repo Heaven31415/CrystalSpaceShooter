@@ -12,12 +12,15 @@ class StateManager
     @@instance ||= create
   end
 
+  @fullscreen : Bool
+
   def initialize
     @states = [] of State
     @requests = Deque(State::Type?).new
     @clock = SF::Clock.new
     @dt = SF::Time.new
     @texture = SF::RenderTexture.new(Game::WORLD_WIDTH, Game::WORLD_HEIGHT)
+    @fullscreen = Game.config["Fullscreen", Bool]
   end
 
   # TODO: Probably rename from 'state' to 'current' or 'actual'
@@ -64,7 +67,7 @@ class StateManager
     end
   end
 
-  def run
+  def run : Nil
     process_requests
     @clock.restart
 
@@ -127,13 +130,10 @@ class StateManager
   end
 
   private def input(event : SF::Event) : Nil
-    # Handle toggling between fullscreen and windowed mode
     if event.is_a? SF::Event::KeyPressed
       if event.code == SF::Keyboard::Return && event.alt
-        # TODO: This isn't necessary, I can detect directly from window
-        # if it's windowed or not.
-        Game.fullscreen = !Game.fullscreen
-        Window.recreate
+        @fullscreen = !@fullscreen
+        Window.recreate(@fullscreen)
       end
     end
 

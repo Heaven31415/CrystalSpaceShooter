@@ -1,7 +1,5 @@
 require "./state_cache"
 
-# TODO: @requests should be a Deque(State::Type?) instead of array
-
 class StateManager
   @@instance : StateManager?
 
@@ -16,7 +14,7 @@ class StateManager
 
   def initialize
     @states = [] of State
-    @requests = [] of State::Type?
+    @requests = Deque(State::Type?).new
     @clock = SF::Clock.new
     @dt = SF::Time.new
     @texture = SF::RenderTexture.new(Game::WORLD_WIDTH, Game::WORLD_HEIGHT)
@@ -49,19 +47,19 @@ class StateManager
   end
 
   private def process_requests : Nil
-    # TODO: It can be removed
-    @requests.reverse!
-    while @requests.size != 0
-      request = @requests.pop
-      case request
+    until @requests.empty?
+      case request = @requests.pop
       when State::Type
         state = Game.cache[request]
         state.on_load
         @states.push(state)
       when Nil
-        # TODO: What will happen if @states.size == 0?
-        state = @states.pop
-        state.on_unload
+        if @states.empty?
+          raise "Unable to remove state from empty StateManager"
+        else
+          state = @states.pop
+          state.on_unload
+        end
       end
     end
   end

@@ -7,9 +7,8 @@ require "./state/state_manager"
 
 class Game
   TIME_PER_FRAME = SF.seconds(1.0 / Config.instance["Fps", Float32])
-  # TODO: Rename 'RenderWidth' to 'WorldWidth' and 'RenderHeight' to 'WorldHeight'
-  WORLD_WIDTH = Config.instance["RenderWidth", Int32]
-  WORLD_HEIGHT = Config.instance["RenderHeight", Int32]
+  WORLD_WIDTH = Config.instance["WorldWidth", Int32]
+  WORLD_HEIGHT = Config.instance["WorldHeight", Int32]
   
   def self.audio : Audio
     Audio.instance

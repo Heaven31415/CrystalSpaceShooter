@@ -1,31 +1,31 @@
 require "crsfml/audio"
 require "crsfml/graphics"
-require "../app/packed_resources"
+require "../src/packed_resources"
 
 # Fonts
 fonts_path    = "resources/fonts"
-fonts_enum    = "Fonts"
+fonts_enum    = "Resource::Font"
 
 # Music
 music_path    = "resources/music"
-music_enum    = "Music"
+music_enum    = "Resource::Music"
 
 # Shaders
 shaders_path  = "resources/shaders"
-shaders_enum  = "Shaders"
+shaders_enum  = "Resource::Shader"
 
 # Sounds
 sounds_path   = "resources/sounds"
-sounds_enum   = "Sounds"
+sounds_enum   = "Resource::Sound"
 
 # Textures
 textures_path = "resources/textures"
-textures_enum = "Textures"
+textures_enum = "Resource::Texture"
 
 begin
   fonts = PackedResources(SF::Font).from_directory(fonts_path, erase_extensions: true)
-  fonts.save("data/fonts.data")
-  fonts.build_enum("data/fonts.cr", fonts_enum)
+  fonts.save("data/font.data")
+  fonts.build_enum("data/font.cr", fonts_enum)
 rescue ex : Exception
   puts ex.message
 end
@@ -40,24 +40,24 @@ end
 
 begin
   shaders = PackedResources(SF::Shader).from_directory(shaders_path, erase_extensions: false)
-  shaders.save("data/shaders.data")
-  shaders.build_enum("data/shaders.cr", shaders_enum)
+  shaders.save("data/shader.data")
+  shaders.build_enum("data/shader.cr", shaders_enum)
 rescue ex : Exception
   puts ex.message
 end
 
 begin
   sounds = PackedResources(SF::SoundBuffer).from_directory(sounds_path, erase_extensions: true)
-  sounds.save("data/sounds.data")
-  sounds.build_enum("data/sounds.cr", sounds_enum)
+  sounds.save("data/sound.data")
+  sounds.build_enum("data/sound.cr", sounds_enum)
 rescue ex : Exception
   puts ex.message
 end
 
 begin
   textures = PackedResources(SF::Texture).from_directory(textures_path, erase_extensions: true)
-  textures.save("data/textures.data")
-  textures.build_enum("data/textures.cr", textures_enum)
+  textures.save("data/texture.data")
+  textures.build_enum("data/texture.cr", textures_enum)
 rescue ex : Exception
   puts ex.message
 end

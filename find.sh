@@ -1,0 +1,1 @@
+grep -r --include "*.cr" --exclude-dir=lib -P $1 .
